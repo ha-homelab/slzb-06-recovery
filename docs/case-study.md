@@ -3,6 +3,12 @@
 This record removes household addresses, device identities, secrets, raw logs,
 and private deployment details. It distinguishes observations from inference.
 
+**Final outcome:** after the radio upgrade and subsequent coordinator
+repositioning/reconnection, all three previously failing live device checks
+passed and fresh topology showed a router neighbor and active routes. No
+channel change or re-pairing was needed. The sequence below preserves the
+intermediate failures; it does not isolate a single cause for the recovery.
+
 ## Starting point
 
 After a household power outage, Home Assistant's Zigbee and some Matter devices
@@ -86,11 +92,11 @@ before/after data: all twelve checks passed. No input backup data is published.
 However, **all three uncached Basic manufacturer reads to paired mains-powered
 devices still failed**. HA logs confirmed `NWK_NO_ROUTE` (205) for each. Thus the
 radio flash and recovery of the same network were verified, but live Zigbee
-device communication remained unresolved. A refreshed topology scan showed no
-coordinator neighbors, unlike older cached topology records. No channel change
-or re-pairing was performed. Antenna, location, powered routers, and mesh reachability remain
-separate troubleshooting work; firmware success must not be presented as a
-complete recovery of the household's devices.
+device communication was still unresolved at this stage. A refreshed topology
+scan showed no coordinator neighbors, unlike older cached topology records. No channel change
+or re-pairing was performed. Antenna, location, powered routers, and mesh
+reachability still needed separate checks; firmware success alone had not
+established live device communication.
 
 ## Controlled follow-up radio checks
 
@@ -114,9 +120,34 @@ identifiers are not published.
 Separately, one HA diagnostic energy scan reported channel 25 at approximately
 **68% of the raw 0–255 energy scale**; the other channels ranged from roughly
 16% to 97% of that scale. These normalized readings are **not channel-utilization
-percentages**, and a single sample does not prove interference. The failed
-queries and empty neighbor results establish unresolved radio reachability;
-they do not establish distance, antenna damage, or another specific cause.
+percentages**, and a single sample does not prove interference. At that stage,
+the failed queries and empty neighbor results showed that radio reachability
+was still unresolved; they did not establish distance, antenna damage, or
+another specific cause.
+
+## Final recovery validation after repositioning and reconnection
+
+The coordinator was physically moved nearer the paired devices, with its
+antenna attached and Ethernet/power restored. Once Ethernet returned, ZHA
+loaded and reported **Z-Stack 20240710**, the same coordinator identity, and
+the unchanged network channel **25**.
+
+All **three previously failing uncached Basic manufacturer reads succeeded**:
+two paired mains-powered outlets and one bulb responded. Fresh topology now
+showed a router neighbor and active routes. This was live communication evidence,
+not just cached availability or a successful integration startup. No channel
+change or re-pairing was performed. Power had been restored to 8 dBm after the
+earlier probe, and standard HA configuration retained no explicit transmit-power
+override, with its default selection of 8 dBm. The ESP32 core remained `0.9.9`.
+A fresh complete private backup captured after recovery again passed all twelve
+identity, key, and counter comparisons against the pre-flash state.
+
+Recovery was observed **after placement and reconnection**, but this was not
+an isolated distance experiment. Power/reconnection and an external HA service
+redeployment also occurred during the interval. The evidence therefore does
+not prove that distance alone caused the problem, identify an antenna defect,
+or establish firmware as the original cause. It confirms that the three tested
+devices and routing checks recovered under the final conditions.
 
 ## Limits and remaining options
 
@@ -126,6 +157,7 @@ they do not establish distance, antenna damage, or another specific cause.
 - A full core migration still needs a supported data/bootloader path or a
   separately engineered and validated migration mechanism.
 - A fresh live response from real devices is the recovery criterion. Firmware
-  version and integration status alone are insufficient.
+  version and integration status alone are insufficient; the final three
+  live reads and refreshed routing evidence supplied that validation here.
 - Matter health is tracked independently; this radio write does not establish
   any change to Matter devices.

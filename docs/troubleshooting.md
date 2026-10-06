@@ -109,6 +109,21 @@ busy. The case study's single channel-25 sample at about 68% of that scale did
 not establish interference. Do not change the network channel solely on that
 sample or treat higher transmit power as a demonstrated fix.
 
+### Confirm recovery with fresh device responses
+
+In the [final case-study validation](case-study.md#final-recovery-validation-after-repositioning-and-reconnection),
+the coordinator was repositioned nearer the paired devices and reconnected.
+All three previously failing uncached reads then succeeded, and refreshed
+topology showed a router neighbor and active routes. The radio stayed on
+`20240710`, the channel and coordinator identity were unchanged, and no
+re-pairing or persistent transmit-power increase was needed.
+
+This supports checking placement and connectivity and then repeating the same
+live tests. It does not prove distance as the unique cause: power/reconnection
+and an HA service redeployment also occurred in that interval. Record those
+confounding changes when describing recovery, and distinguish successful
+responses from the tested devices from untested devices' cached status.
+
 ## Matter is a separate investigation
 
 This original SLZB-06 is used here as a **Zigbee** coordinator. The documented
