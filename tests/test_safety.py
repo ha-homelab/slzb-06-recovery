@@ -20,7 +20,8 @@ def fixture():
     # Synthetic, not a real Zigbee backup or usable key.
     return {"node_info": {"ieee": "00:00:00:00:00:00:00:01"}, "network_info": {
         "channel": 20, "pan_id": "0001", "extended_pan_id": "example",
-        "network_key": {"key": "synthetic-test-key", "tx_counter": 100},
+        "network_key": {"key": "synthetic-test-key", "seq": 0, "tx_counter": 100, "rx_counter": 0},
+        "tc_link_key": {"key": "synthetic-tc-key", "seq": 0, "tx_counter": 0, "rx_counter": 0},
         "nwk_addresses": {"synthetic-router": 1}, "key_table": [],
     }}
 
@@ -89,8 +90,22 @@ class GuardTests(unittest.TestCase):
         after["node_info"]["ieee"] = "changed"
         result = compare_network.compare(before, after)
         self.assertFalse(result["network_key"])
-        self.assertFalse(result["tx_counter_not_decreased"])
+        self.assertFalse(result["network_key_tx_counter_not_decreased"])
         self.assertFalse(result["coordinator_ieee"])
+
+    def test_comparison_rejects_missing_key_or_counter_fields(self):
+        before = fixture()
+        for key, field in (("tc_link_key", "key"), ("network_key", "tx_counter"), ("tc_link_key", "rx_counter")):
+            broken = copy.deepcopy(before)
+            del broken["network_info"][key][field]
+            with self.subTest(key=key, field=field), self.assertRaises(ValueError):
+                compare_network.compare(before, broken)
+
+    def test_ambiguous_backup_list_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "Ambiguous"):
+            radio_legacy.find_network_backup([fixture(), fixture()])
+        backup = fixture()
+        self.assertIs(radio_legacy.find_network_backup({"backup": backup, "settings": fixture()}), backup)
 
     def test_download_rejects_unexpected_bytes(self):
         with self.assertRaises(ValueError):

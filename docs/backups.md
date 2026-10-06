@@ -126,6 +126,10 @@ python3 scripts/compare_network.py backups/zha-before.json backups/zha-after.jso
 
 Require the same coordinator IEEE, channel, PAN, extended PAN, and key material.
 Transmit counters must not move backward; a restore may intentionally advance
-them. The helper prints only equality/monotonicity results. Also inspect the
+them. The helper requires both key records, sequence numbers, and transmit/receive
+counters. Missing fields cause a failure rather than a misleading all-true
+result. Containers with multiple unselected backups are rejected; export the
+intended complete backup explicitly. The helper prints only equality/monotonicity
+results. Also inspect the
 reported **running** radio version and do live device reads. Matching network
 identity is necessary, but not sufficient, for restored device communication.

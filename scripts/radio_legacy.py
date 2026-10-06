@@ -14,6 +14,7 @@ from slzb import request, status, validate_identity
 
 
 def find_network_backup(value):
+    """Accept one explicit backup; reject containers with ambiguous candidates."""
     if isinstance(value, dict):
         network = value.get("network_info")
         if (isinstance(network, dict) and isinstance(value.get("node_info"), dict)
@@ -22,16 +23,25 @@ def find_network_backup(value):
                 and network["network_key"].get("key")
                 and all(key in network for key in ("channel", "pan_id", "extended_pan_id"))):
             return value
+        if "backup" in value:
+            # ha_zha.py explicitly selects the fresh complete backup here.
+            return find_network_backup(value["backup"])
+        found_items = []
         for item in value.values():
             found = find_network_backup(item)
             if found:
-                return found
+                found_items.append(found)
     elif isinstance(value, list):
+        found_items = []
         for item in value:
             found = find_network_backup(item)
             if found:
-                return found
-    return None
+                found_items.append(found)
+    else:
+        return None
+    if len(found_items) > 1:
+        raise ValueError("Ambiguous backup container: export one explicitly selected complete backup")
+    return found_items[0] if found_items else None
 
 
 def validate_inputs(args):

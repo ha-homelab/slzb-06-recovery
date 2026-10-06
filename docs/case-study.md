@@ -66,8 +66,27 @@ bar or these checksums.
 
 ## Post-reconnect validation
 
-Post-reconnect results are being checked before the final case-study update.
-The project does not yet claim that every Zigbee device recovered.
+ZHA eventually reached `loaded`; fresh network settings identified the running
+radio as **Z-Stack 20240710**. Initialization took longer than the first 90-second
+request timeout, while protocol diagnostics showed ongoing radio responses.
+A timed-out request had not meant that HA had stopped initializing.
+
+A newly created ZHA backup reported `is_complete: true`. Comparison against
+the pre-flash network confirmed:
+
+- The same coordinator IEEE, channel, PAN ID, extended PAN ID, and network update ID.
+- Preserved network and trust-center key material.
+- A network transmit counter that had not decreased.
+- Thirteen key-table entries and thirteen network-address mappings.
+- Fourteen ZHA records, including the coordinator, retained without re-pairing.
+
+However, **all three uncached Basic manufacturer reads to paired mains-powered
+devices still failed**. HA logs confirmed `NWK_NO_ROUTE` (205) for each. Thus the
+radio flash and recovery of the same network were verified, but live Zigbee
+device communication remained unresolved. No channel change or re-pairing was
+performed. Antenna, location, powered routers, and mesh reachability remain
+separate troubleshooting work; firmware success must not be presented as a
+complete recovery of the household's devices.
 
 ## Limits and remaining options
 

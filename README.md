@@ -15,8 +15,10 @@ There are two separate firmware targets:
   require restoring the existing Zigbee network from a verified backup.
 
 Our [case study](docs/case-study.md) records both unsuccessful core OTA attempts
-and a verified radio flash. Read the results and limitations before choosing a
-procedure; successful flashing alone does not prove every end device recovered.
+and a verified radio flash to Z-Stack `20240710`, with the existing network
+restored. Three live device reads still failed with `NWK_NO_ROUTE`; full device
+communication remained unresolved. Read the results and limitations before
+choosing a procedure.
 
 ## Start here
 

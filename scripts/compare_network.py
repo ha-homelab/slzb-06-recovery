@@ -12,14 +12,26 @@ def compare(before, after):
     if before is None or after is None:
         raise ValueError("Both files must contain a recognizable zigpy network backup")
     old, new = before["network_info"], after["network_info"]
+    for label, backup in (("before", before), ("after", after)):
+        network = backup["network_info"]
+        for field in ("channel", "pan_id", "extended_pan_id"):
+            if network.get(field) is None:
+                raise ValueError(f"{label}: missing required network field {field}")
+        for field in ("network_key", "tc_link_key"):
+            key = network.get(field)
+            if not isinstance(key, dict) or not key.get("key") or key.get("seq") is None:
+                raise ValueError(f"{label}: missing required key/sequence fields in {field}")
+            for counter in ("tx_counter", "rx_counter"):
+                if type(key.get(counter)) is not int or key[counter] < 0:
+                    raise ValueError(f"{label}: missing or invalid {field}.{counter}")
     result = {key: old.get(key) == new.get(key) for key in ("channel", "pan_id", "extended_pan_id")}
     result["coordinator_ieee"] = before["node_info"].get("ieee") == after["node_info"].get("ieee")
     for field in ("network_key", "tc_link_key"):
         a, b = old.get(field), new.get(field)
-        if isinstance(a, dict) and isinstance(b, dict):
-            result[field] = a.get("key") == b.get("key")
-            if field == "network_key" and isinstance(a.get("tx_counter"), int) and isinstance(b.get("tx_counter"), int):
-                result["tx_counter_not_decreased"] = b["tx_counter"] >= a["tx_counter"]
+        result[field] = a["key"] == b["key"]
+        result[field + "_sequence"] = a["seq"] == b["seq"]
+        for counter in ("tx_counter", "rx_counter"):
+            result[f"{field}_{counter}_not_decreased"] = b[counter] >= a[counter]
     return result
 
 
@@ -35,4 +47,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (ValueError, OSError) as exc:
+        raise SystemExit(str(exc)) from exc
