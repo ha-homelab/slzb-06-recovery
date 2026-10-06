@@ -75,10 +75,13 @@ A newly created ZHA backup reported `is_complete: true`. Comparison against
 the pre-flash network confirmed:
 
 - The same coordinator IEEE, channel, PAN ID, extended PAN ID, and network update ID.
-- Preserved network and trust-center key material.
-- A network transmit counter that had not decreased.
+- Preserved network and trust-center key material and key sequences.
+- Network and trust-center transmit/receive counters that had not decreased.
 - Thirteen key-table entries and thirteen network-address mappings.
 - Fourteen ZHA records, including the coordinator, retained without re-pairing.
+
+The public comparison helper was also run locally against the private
+before/after data: all twelve checks passed. No input backup data is published.
 
 However, **all three uncached Basic manufacturer reads to paired mains-powered
 devices still failed**. HA logs confirmed `NWK_NO_ROUTE` (205) for each. Thus the
