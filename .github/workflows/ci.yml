@@ -1,0 +1,25 @@
+name: Validate tools
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install Home Assistant helper dependency
+        run: python3 -m pip install -r requirements-ha.txt
+      - name: Unit tests and syntax checks (no hardware)
+        run: |
+          python3 -m unittest discover -s tests -v
+          python3 -m compileall -q scripts
+          python3 scripts/slzb.py --help
+          python3 scripts/radio_legacy.py --help
+          python3 scripts/compare_network.py --help
+          python3 scripts/ha_zha.py --help
