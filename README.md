@@ -14,12 +14,13 @@ There are two separate firmware targets:
   Updating it over Ethernet does not upgrade the ESP32 core. Erasing it can
   require restoring the existing Zigbee network from a verified backup.
 
-Our [case study](docs/case-study.md) records both unsuccessful core OTA attempts
-and a verified radio flash to Z-Stack `20240710`, with the existing network
-restored. After repositioning and reconnecting the coordinator, all three
-previously failing live device reads succeeded, and refreshed topology showed
-a router neighbor and active routes. The exact RF/root cause was not isolated.
-Read the results and limitations before choosing a procedure.
+Our [case study](docs/case-study.md) records unsuccessful core OTA attempts,
+a verified radio upgrade to Z-Stack `20240710`, and recovery of three live
+device reads after repositioning/reconnection. A later USB migration captured
+a verified full 16 MiB backup and successfully wrote and booted core `2.5.2`.
+**Ethernet recovery and live Zigbee validation after that core migration are
+still pending.** The earlier live successes must not be read as post-core
+validation. Read the results and limitations before choosing a procedure.
 
 ## Start here
 
@@ -41,8 +42,9 @@ or re-pair devices merely because the coordinator has become unavailable.
 
 Requires Python 3.12+ for the full workflow. The HTTP and firmware download
 helpers use the standard library. Home Assistant access needs `requirements-ha.txt`;
-the legacy radio wrapper needs `requirements-radio.txt` on a Linux host. None
-of the commands below flashes firmware.
+the legacy radio wrapper needs `requirements-radio.txt` on a Linux host, and
+the USB core helper needs `requirements-core.txt`. None of the commands below
+flashes firmware.
 
 ```sh
 python3 scripts/slzb.py --url http://192.0.2.10 status
@@ -70,6 +72,9 @@ output; backup files still contain sensitive data.
   hash is accepted.
 - `scripts/compare_network.py`: compare private before/after network identity
   and key data without printing secret values.
+- `scripts/esp32_core.py`: [complete USB backup and exact core-2.5.2 migration](docs/usb-core-upgrade.md),
+  with pinned esptool, chip/security checks, verified backup freshness, and
+  explicit execution. See also the [temporary Synology VMM USB path](docs/synology-usb-passthrough.md).
 
 These tools do not automatically recover from failed flashes, promise zero
 downtime, or prove that a backup can be restored on every software version.

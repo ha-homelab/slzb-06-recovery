@@ -31,6 +31,12 @@ branches can change; consult the source matching your installed version.
   the tested radio version and context for `20230507` instability.
 - [ESP32 boot-mode selection](https://docs.espressif.com/projects/esptool/en/latest/esp32/advanced-topics/boot-mode-selection.html):
   ROM serial downloader and reset/boot signals.
+- [esptool basic commands](https://docs.espressif.com/projects/esptool/en/latest/esp32/esptool/basic-commands.html):
+  flash identification, read, write, and verification; this project's USB helper
+  pins esptool `5.4.0` and uses its stock stub protocol with bounded reads.
+- [Synology VMM specifications](https://www.synology.com/en-global/dsm/7.3/software_spec/vmm)
+  and [libvirt attach-device](https://www.libvirt.org/manpages/virsh.html#attach-device):
+  USB passthrough availability and temporary live attachment scope.
 - [Home Assistant ZHA documentation](https://www.home-assistant.io/integrations/zha/)
   and [ZHA WebSocket source](https://github.com/home-assistant/core/blob/dev/homeassistant/components/zha/websocket_api.py):
   integration behavior and admin backup/live-read interfaces. The helper's
@@ -51,8 +57,10 @@ branches can change; consult the source matching your installed version.
 
 **Observed** means an operation or result actually occurred on the case-study
 unit: HTTP responses, version after reboot, failed and later successful live
-reads, refreshed topology, and matching radio CRCs. **Source analysis** describes
-code or downloaded image metadata.
-**Inference** connects those facts, such as the suspected OTA slot mismatch.
+reads, refreshed topology, matching radio CRCs, device-verified full-flash
+backup/partition data, and the core write and UART boot. **Source analysis**
+describes code or downloaded image metadata.
+**Inference** connects those facts, such as a suspected cause of USB instability;
+the legacy OTA slot capacity itself was confirmed from the device backup.
 **Untested possibility** is explicitly labeled, such as a custom partition
 migrator. None of these categories should silently substitute for another.

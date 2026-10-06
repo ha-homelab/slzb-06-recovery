@@ -16,12 +16,17 @@ nor a reboot establishes that the upgrade succeeded.
 Only an **app-only `-ota.bin`** belongs at this endpoint. A full image contains
 bootloader/partition data and must not be uploaded as an OTA application.
 
-The downloaded official `0.9.9` full image has:
+The **actual installed** legacy partition table was later read at `0x8000`
+from a device-MD5-verified USB snapshot, and matched the downloaded official
+`0.9.9` full image:
 
 ```text
+nvs       offset 0x009000   size 0x005000
+otadata   offset 0x00e000   size 0x002000
 app0      offset 0x010000   size 0x140000 (1,310,720 bytes)
 app1      offset 0x150000   size 0x140000 (1,310,720 bytes)
 filesystem offset 0x290000 size 0x160000
+coredump  offset 0x3f0000   size 0x010000
 ```
 
 The downloaded `2.5.2` and `3.3.1` full images use:
@@ -32,10 +37,10 @@ app1      offset 0x650000   size 0x640000
 filesystem offset 0xc90000 size 0x360000
 ```
 
-These are **image** partition tables. We did not read the actual installed
-partition table from the affected unit. Its reported physical flash capacity
-was 16 MiB; this does not prove its OTA slots are large. A newer factory layout
-running an old application can behave differently from an original old layout.
+The modern table above describes the downloaded full images; the legacy table
+was confirmed on the device itself. Physical flash capacity was 16 MiB despite
+its small legacy OTA slots. A newer factory layout running an old application
+can therefore behave differently from an original old layout.
 
 ## Observed attempts
 
@@ -45,10 +50,10 @@ running an old application can behave differently from an original old layout.
   SHA-256 `45734e4b2a8fc8723fe4541afbcbc95f403c108eb73e770ce46b600389b7a15c`.
 
 Both actual uploads returned `FAIL`; the device came back on core `0.9.9`.
-Both images exceed the old image's 1,310,720-byte application slot. A layout/size
-mismatch is strongly supported, but the exact installed partition table and
-low-level updater error were not captured. Repeating the same upload is not a
-useful recovery strategy.
+Both images exceed the **actually installed** 1,310,720-byte application slots,
+as the later verified readback confirmed. Neither can fit that layout. The
+internal updater error code was not captured. Repeating the same oversized
+upload is not a useful recovery strategy.
 
 There are [first-hand reports of 0.9.9 to 2.5.2 over HTTP OTA](https://community.home-assistant.io/t/smlight-slzb-06-and-ha-2024-9-2/773037),
 including reports of limitations afterward. They do not establish compatibility
@@ -85,6 +90,12 @@ The helper's size argument is an operator-supplied fact, not an automatic probe.
 Do not perform an indiscriminate erase as a troubleshooting step. When using
 esptool manually, inspect the vendor manifest and image first; this project
 deliberately supplies no universal full-image write command.
+
+For the specific original board and image used here, the
+[guarded USB helper](usb-core-upgrade.md) provides a complete snapshot and an
+explicit 2.5.2 write path. That write and UART boot were verified; Ethernet and
+live device validation after it remain pending. It rejects different images,
+unexpected identities, unverified backups, secure boot, and flash encryption.
 
 ## Can TFTP or the bootloader bypass this?
 
