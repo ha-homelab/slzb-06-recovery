@@ -106,9 +106,12 @@ python -m esptool --port /dev/ttyUSB0 read-flash 0 0x1000000 backups/esp32-befor
 
 This captures the ESP32, not the CC2652P. It may contain credentials. A CC2652P
 raw flash read through an appropriate TI/SMLIGHT tool is a separate operation
-and may not be available when debug/read protections apply. The case study
-had no usable ESP32 USB connection, so no full ESP32 flash backup was obtained.
-Do not claim a rollback path that was not actually captured and verified.
+and may not be available when debug/read protections apply. Initial Mac USB
+attempts failed; a later Synology-to-Linux USB path produced a complete verified
+16 MiB ESP32 backup. The [bounded backup helper](usb-core-upgrade.md) checks
+blocks and the whole device, writes a private identity/checksum manifest, and
+refuses incomplete or stale backups before the exact supported core write.
+The dump was captured and verified, but restoring it was not tested.
 
 ## After radio programming
 

@@ -61,7 +61,11 @@ assuming every charging cable carries data.
 PoE and USB can be connected together as documented by SMLIGHT. External PoE
 power does not prove a C-to-C data connection will enumerate. In the case study,
 multiple cable/adapter combinations, including C-to-C with PoE, produced no USB
-device. The available evidence did not identify one definitive failed component.
+device on the Mac initially. A later [Synology-to-Linux USB path](synology-usb-passthrough.md)
+enumerated CP2102N. Sustained reads still failed with USB `-71` and serial `EIO`
+until a power cycle and PoE-plus-USB arrangement; the complete backup/write then
+passed. Neither xHCI nor smaller packets alone had cured those failures. A dim
+LED was an observed clue, not proof of a specific power/cable/adapter fault.
 
 Avoid cutting cables or improvising an injector. A verified data cable, a
 known-good adapter, or the supported PoE/network radio path is easier to test.
@@ -111,12 +115,18 @@ sample or treat higher transmit power as a demonstrated fix.
 
 ### Confirm recovery with fresh device responses
 
-In the [final case-study validation](case-study.md#final-recovery-validation-after-repositioning-and-reconnection),
+In the [radio-stage validation](case-study.md#final-recovery-validation-after-repositioning-and-reconnection),
 the coordinator was repositioned nearer the paired devices and reconnected.
 All three previously failing uncached reads then succeeded, and refreshed
 topology showed a router neighbor and active routes. The radio stayed on
 `20240710`, the channel and coordinator identity were unchanged, and no
 re-pairing or persistent transmit-power increase was needed.
+
+Those live successes preceded the subsequent ESP32 migration. After core
+`2.5.2` was written and its boot verified, Ethernet had link transitions without
+a DHCP address and ZHA retried an unreachable host. The [post-core checks](case-study.md#usb-core-migration-and-current-network-status)
+are still pending. Diagnose this LAN boundary before attributing the retry to
+the Zigbee mesh or reusing earlier successful device reads as current evidence.
 
 This supports checking placement and connectivity and then repeating the same
 live tests. It does not prove distance as the unique cause: power/reconnection

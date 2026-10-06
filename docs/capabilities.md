@@ -28,13 +28,14 @@ repair step for missing devices.
 The [vendor's Thread guide](https://smlight.tech/manual/slzb-06/guide/thread-matter/)
 describes replacing radio firmware with a Thread RCP and connecting an OpenThread
 Border Router/HA stack. The guide lists core `2.1.0-dev` or later for its workflow.
-This is not a feature established on the case-study core `0.9.9`, and does not
-mean simultaneous Zigbee and Thread on its single CC2652P radio.
+This was not available as a verified feature on the original core `0.9.9`,
+and was not tested after its upgrade to `2.5.2`. It does not mean simultaneous
+Zigbee and Thread on its single CC2652P radio.
 
 The [vendor's Bluetooth proxy guide](https://smlight.tech/manual/slzb-06/guide/bluetooth-proxy/)
 describes ESPHome-based core firmware and compatible combinations. It warns
 that the normal web UI is replaced and returning to factory firmware can need
-USB. With unresolved USB enumeration, that is a significant recovery limitation.
+USB. Establish a reliable USB recovery path before considering that conversion.
 No Thread, Bluetooth-proxy, or ESPHome conversion was tested here.
 
 ## What this session proved
@@ -42,7 +43,8 @@ No Thread, Bluetooth-proxy, or ESPHome conversion was tested here.
 It proved a guarded legacy Ethernet **radio** upgrade and restoration of the
 same Zigbee network. Modern core OTA was rejected. After subsequent coordinator
 repositioning/reconnection, the three previously failing live device checks
-passed and routing returned; the exact cause was not isolated. Full USB core
-migration and vendor-documented hardware-programmer recovery remain separate
-options. See the [case study](case-study.md),
+passed and routing returned; the exact cause was not isolated. A later full
+USB backup and core `2.5.2` write/boot were verified, but Ethernet recovery and
+live Zigbee validation after that migration remain pending. Hardware-programmer
+recovery remains an untested alternative. See the [case study](case-study.md),
 [core guide](core-firmware.md), and [radio guide](radio-firmware.md).
