@@ -92,6 +92,23 @@ Historical devices that were disconnected months earlier should not be counted
 as newly broken. Compare last-seen timestamps and known intentionally unplugged
 devices before judging recovery.
 
+### Interpret radio probes without overdiagnosing
+
+The [follow-up case-study checks](case-study.md#controlled-follow-up-radio-checks)
+used a standalone client with ZHA disabled and the existing network retained.
+The radio accepted 8 dBm and 20 dBm power requests, but paired-device address
+queries timed out and `MgmtLqi` returned zero neighbors at both settings.
+The original 8 dBm setting was restored. This does not isolate an antenna or
+distance fault, and an accepted power command does not verify actual RF output.
+Any separate diagnostic client needs exclusive ownership; it must not compete
+with ZHA or Zigbee2MQTT or form a replacement network.
+
+Energy-detection readings also need careful interpretation. A value expressed
+as a fraction of the raw 0–255 scale is not the percentage of time a channel is
+busy. The case study's single channel-25 sample at about 68% of that scale did
+not establish interference. Do not change the network channel solely on that
+sample or treat higher transmit power as a demonstrated fix.
+
 ## Matter is a separate investigation
 
 This original SLZB-06 is used here as a **Zigbee** coordinator. The documented
