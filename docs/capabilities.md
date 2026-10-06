@@ -40,7 +40,9 @@ No Thread, Bluetooth-proxy, or ESPHome conversion was tested here.
 ## What this session proved
 
 It proved a guarded legacy Ethernet **radio** upgrade and restoration of the
-same Zigbee network. Modern core OTA was rejected; live device routing remained
-unresolved. Full USB core migration and vendor-documented hardware-programmer
-recovery remain separate options. See the [case study](case-study.md),
+same Zigbee network. Modern core OTA was rejected. After subsequent coordinator
+repositioning/reconnection, the three previously failing live device checks
+passed and routing returned; the exact cause was not isolated. Full USB core
+migration and vendor-documented hardware-programmer recovery remain separate
+options. See the [case study](case-study.md),
 [core guide](core-firmware.md), and [radio guide](radio-firmware.md).

@@ -50,8 +50,9 @@ branches can change; consult the source matching your installed version.
 ## How to interpret this repository
 
 **Observed** means an operation or result actually occurred on the case-study
-unit: HTTP responses, version after reboot, failed live reads, and matching
-radio CRCs. **Source analysis** describes code or downloaded image metadata.
+unit: HTTP responses, version after reboot, failed and later successful live
+reads, refreshed topology, and matching radio CRCs. **Source analysis** describes
+code or downloaded image metadata.
 **Inference** connects those facts, such as the suspected OTA slot mismatch.
 **Untested possibility** is explicitly labeled, such as a custom partition
 migrator. None of these categories should silently substitute for another.

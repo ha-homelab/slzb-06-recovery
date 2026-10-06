@@ -16,9 +16,10 @@ There are two separate firmware targets:
 
 Our [case study](docs/case-study.md) records both unsuccessful core OTA attempts
 and a verified radio flash to Z-Stack `20240710`, with the existing network
-restored. Three live device reads still failed with `NWK_NO_ROUTE`; full device
-communication remained unresolved. Read the results and limitations before
-choosing a procedure.
+restored. After repositioning and reconnecting the coordinator, all three
+previously failing live device reads succeeded, and refreshed topology showed
+a router neighbor and active routes. The exact RF/root cause was not isolated.
+Read the results and limitations before choosing a procedure.
 
 ## Start here
 
