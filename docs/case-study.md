@@ -87,10 +87,36 @@ However, **all three uncached Basic manufacturer reads to paired mains-powered
 devices still failed**. HA logs confirmed `NWK_NO_ROUTE` (205) for each. Thus the
 radio flash and recovery of the same network were verified, but live Zigbee
 device communication remained unresolved. A refreshed topology scan showed no
-coordinator neighbors, unlike older cached topology records. No channel change or re-pairing was
-performed. Antenna, location, powered routers, and mesh reachability remain
+coordinator neighbors, unlike older cached topology records. No channel change
+or re-pairing was performed. Antenna, location, powered routers, and mesh reachability remain
 separate troubleshooting work; firmware success must not be presented as a
 complete recovery of the household's devices.
+
+## Controlled follow-up radio checks
+
+With ZHA disabled to give a standalone `zigpy-znp` client exclusive radio
+ownership, the client started in `read_only` mode on the existing network.
+Explicit `SYS.SetTxPower` requests for both **8 dBm and 20 dBm** were accepted
+by the radio. At each setting, three ZDO network-address queries addressed by
+the paired devices' IEEE identities timed out after 20 seconds. The coordinator's
+`MgmtLqi` request returned `SUCCESS` with **zero neighbors** at both settings.
+Acknowledged power settings are not measurements of radiated output power.
+
+Power was restored to **8 dBm**. The HA country setting was `US`, with no explicit
+transmit-power override; the installed zigpy default-selection logic chose
+8 dBm. This describes that software configuration, not a universal setting or
+recommendation. The probe validated the existing coordinator identity and
+channel and used `read_only` startup. The earlier before/after firmware
+comparison had already confirmed preserved keys and identity; no fresh
+post-power-test key comparison was performed. The private probe and household
+identifiers are not published.
+
+Separately, one HA diagnostic energy scan reported channel 25 at approximately
+**68% of the raw 0–255 energy scale**; the other channels ranged from roughly
+16% to 97% of that scale. These normalized readings are **not channel-utilization
+percentages**, and a single sample does not prove interference. The failed
+queries and empty neighbor results establish unresolved radio reachability;
+they do not establish distance, antenna damage, or another specific cause.
 
 ## Limits and remaining options
 
