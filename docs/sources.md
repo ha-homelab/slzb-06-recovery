@@ -5,6 +5,12 @@ branches can change; consult the source matching your installed version.
 
 ## Manufacturer and upstream sources
 
+- [Original SLZB-06 product page](https://smlight.tech/product/slzb-06/),
+  [Thread guide](https://smlight.tech/manual/slzb-06/guide/thread-matter/), and
+  [Bluetooth proxy guide](https://smlight.tech/manual/slzb-06/guide/bluetooth-proxy/):
+  advertised hardware and version-dependent alternative roles. See
+  [capabilities](capabilities.md) for the original/U-series distinction.
+
 - [Legacy SLZB-06 firmware source](https://github.com/smlight-dev/slzb-06-firmware):
   `web.cpp` API enums, `/update` implementation, configuration export, and
   bootloader commands; `main.cpp` serial buffer and USB/LAN mode behavior.

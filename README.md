@@ -28,6 +28,9 @@ choosing a procedure.
    [Zigbee radio firmware](docs/radio-firmware.md).
 4. Verify the running firmware, network identity, and live device communication.
 
+See [device capabilities and other options](docs/capabilities.md) for transport,
+power, coordinator/router roles, and the limits of later Thread/Bluetooth options.
+
 Use stable power and a **wired** host for radio flashing through the legacy
 bridge. Disable ZHA/Zigbee2MQTT while a flasher owns the serial connection.
 Keep the antenna attached. Do not reset the network, delete the integration,
