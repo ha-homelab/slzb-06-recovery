@@ -1,0 +1,2 @@
+# Tested wrapper contract. Use Python 3.12+ on a wired Linux host.
+smlight-cc-flasher==0.1.7
