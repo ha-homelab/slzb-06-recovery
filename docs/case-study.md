@@ -86,7 +86,8 @@ before/after data: all twelve checks passed. No input backup data is published.
 However, **all three uncached Basic manufacturer reads to paired mains-powered
 devices still failed**. HA logs confirmed `NWK_NO_ROUTE` (205) for each. Thus the
 radio flash and recovery of the same network were verified, but live Zigbee
-device communication remained unresolved. No channel change or re-pairing was
+device communication remained unresolved. A refreshed topology scan showed no
+coordinator neighbors, unlike older cached topology records. No channel change or re-pairing was
 performed. Antenna, location, powered routers, and mesh reachability remain
 separate troubleshooting work; firmware success must not be presented as a
 complete recovery of the household's devices.
