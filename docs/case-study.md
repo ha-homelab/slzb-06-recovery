@@ -139,6 +139,8 @@ not just cached availability or a successful integration startup. No channel
 change or re-pairing was performed. Power had been restored to 8 dBm after the
 earlier probe, and standard HA configuration retained no explicit transmit-power
 override, with its default selection of 8 dBm. The ESP32 core remained `0.9.9`.
+A fresh complete private backup captured after recovery again passed all twelve
+identity, key, and counter comparisons against the pre-flash state.
 
 Recovery was observed **after placement and reconnection**, but this was not
 an isolated distance experiment. Power/reconnection and an external HA service
