@@ -105,9 +105,11 @@ Acknowledged power settings are not measurements of radiated output power.
 Power was restored to **8 dBm**. The HA country setting was `US`, with no explicit
 transmit-power override; the installed zigpy default-selection logic chose
 8 dBm. This describes that software configuration, not a universal setting or
-recommendation. Network channel, identity, and key material remained unchanged
-before and after the checks. The private probe and household identifiers are
-not published.
+recommendation. The probe validated the existing coordinator identity and
+channel and used `read_only` startup. The earlier before/after firmware
+comparison had already confirmed preserved keys and identity; no fresh
+post-power-test key comparison was performed. The private probe and household
+identifiers are not published.
 
 Separately, one HA diagnostic energy scan reported channel 25 at approximately
 **68% of the raw 0–255 energy scale**; the other channels ranged from roughly
