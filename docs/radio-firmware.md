@@ -1,5 +1,8 @@
 # Updating the CC2652P coordinator over Ethernet
 
+For where this fits relative to backups and the later USB core migration,
+start with the [complete upgrade runbook](upgrade-runbook.md).
+
 This procedure targets **original SLZB-06 / CC2652P / core 0.9.9**. It programs
 the Zigbee chip through the ESP32 serial bridge. It does not update the core,
 install a new ESP32 partition table, or convert the device into a Thread router.

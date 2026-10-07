@@ -1,5 +1,8 @@
 # USB core snapshot and guarded 2.5.2 migration
 
+This detailed procedure follows the backup and radio checkpoints in the
+[complete upgrade runbook](upgrade-runbook.md).
+
 **Recorded outcome:** a complete 16 MiB snapshot passed block and whole-device
 MD5 checks, and its second private copy passed SHA-256 verification. The exact
 2.5.2 full image was written and verified; UART then confirmed firmware 2.5.2
@@ -176,6 +179,8 @@ DHCP address; no coordinator Ethernet traffic was observed in a bounded host
 capture. Those observations do not yet isolate an uplink, cable, configuration,
 or firmware cause. They do not undo the verified write/boot, and they do not
 establish post-core Zigbee recovery.
+Subsequent saved switch changes and a verified reboot also did not restore
+the link; see the [current network outcome](case-study.md#authorized-switch-reconfiguration).
 
 References: [esptool basic commands](https://docs.espressif.com/projects/esptool/en/latest/esp32/esptool/basic-commands.html)
 and [core migration context](core-firmware.md).

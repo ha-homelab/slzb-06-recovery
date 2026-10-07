@@ -24,11 +24,19 @@ validation. Read the results and limitations before choosing a procedure.
 
 ## Start here
 
-1. [Identify the device and isolate the fault](docs/troubleshooting.md).
-2. [Back up the core, Home Assistant, and Zigbee network](docs/backups.md).
-3. Choose [core firmware](docs/core-firmware.md) or
-   [Zigbee radio firmware](docs/radio-firmware.md).
-4. Verify the running firmware, network identity, and live device communication.
+**[Follow the complete upgrade and recovery runbook](docs/upgrade-runbook.md).**
+It puts the entire route in order: identify → back up → understand the failed
+OTA path → upgrade/validate the radio → prepare USB → snapshot all ESP32 flash
+→ write/boot core `2.5.2` → verify runtime connectivity. It includes runnable
+commands, exact upstream images/checksums, stop points, and rollback limits.
+
+- For the evidence and current unresolved network outcome, read the
+  [chronological case study](docs/case-study.md).
+- For a fault without a planned upgrade, start with
+  [troubleshooting by layer](docs/troubleshooting.md).
+- For detailed procedures, the runbook links [backups](docs/backups.md),
+  [radio flashing](docs/radio-firmware.md), [core partition limits](docs/core-firmware.md),
+  [USB flashing](docs/usb-core-upgrade.md), and [Synology VMM](docs/synology-usb-passthrough.md).
 
 See [device capabilities and other options](docs/capabilities.md) for transport,
 power, coordinator/router roles, and the limits of later Thread/Bluetooth options.
@@ -79,6 +87,10 @@ output; backup files still contain sensitive data.
 These tools do not automatically recover from failed flashes, promise zero
 downtime, or prove that a backup can be restored on every software version.
 The guards reduce common mistakes but cannot verify physical hardware or power.
+The USB helper is generalized from the private scripts used on hardware and
+has offline tests; the exact published helper has not itself completed a
+hardware flash. See the runbook for the boundary between recorded operations
+and reusable tooling.
 
 ## Public repository boundary
 
