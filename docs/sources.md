@@ -43,6 +43,10 @@ branches can change; consult the source matching your installed version.
   commands were checked against installed HA source; upstream `dev` may differ.
 - [zigpy application implementation](https://github.com/zigpy/zigpy/blob/dev/zigpy/application.py):
   network initialization and backup restore behavior, subject to version/state.
+- [Interface MIB, RFC 2863](https://www.rfc-editor.org/rfc/rfc2863.html),
+  [Power Ethernet MIB, RFC 3621](https://www.rfc-editor.org/rfc/rfc3621.html), and
+  [Q-BRIDGE-MIB, RFC 4363](https://www.rfc-editor.org/rfc/rfc4363.html): separate
+  interface administrative/operational state, PoE delivery, and VLAN/PVID data.
 
 ## First-hand community reports, not compatibility guarantees
 

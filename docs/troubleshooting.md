@@ -10,7 +10,8 @@ and Home Assistant independently. Test each boundary before updating firmware.
 - Confirm the PoE switch itself has an uplink, then check the DHCP lease and
   Ethernet MAC. An isolated powered switch can light both indicators without
   giving the coordinator a usable LAN path.
-- Replace a suspect cable and test another known good port. In the case study,
+- Replace a suspect cable and test another known good port with the same
+  intended VLAN membership and PVID. In the initial case-study stage,
   replacing the uplink cable restored switch/coordinator reachability.
 - Test from the intended wired host. A different route, overlapping subnet,
   proxy, or VPN may reach an unrelated HTTP server. An nginx 404 is not proof
@@ -22,6 +23,59 @@ and Home Assistant independently. Test each boundary before updating firmware.
 The legacy status command uses the `respValuesArr` HTTP header; the response
 body is an HTML page, sometimes gzip-compressed. Parsing the body as JSON will
 fail even on a working coordinator.
+
+### Separate switch identity, power, link, VLAN, and DHCP
+
+Identify the actual switch before interpreting its management data. A familiar
+brand name or a previously discovered address is insufficient when multiple
+switches share a vendor. Match the reported model and the physical unit/port
+using private records. In the case study, read-only NETGEAR Switch Discovery
+Protocol (NSDP) queries from the intended LAN interface found a **GS110TP**;
+an earlier same-brand discovery had identified a different **GS308Ev4**.
+No discovery packets, addresses, or raw switch inventories are published here.
+
+Using the switch UI or existing authorized read-only SNMP access, check each
+layer independently:
+
+1. **Power:** PoE detection/delivery state, current consumption, and available
+   budget. `deliveringPower` confirms the switch is supplying power; it does
+   not establish an Ethernet data link or prove power integrity at the device.
+2. **Link:** uplink speed and the coordinator port's administrative and
+   operational states. `admin-up` means enabled; `oper-down` means it is not
+   operational. Compare these with the device's timestamped Ethernet events.
+   A link-event loop is not by itself evidence that the ESP32 is rebooting.
+3. **VLAN:** record the coordinator port's untagged/tagged membership and PVID,
+   plus the uplink's path to the intended network. A random port swap can
+   change LAN membership even if both ports deliver PoE. VLAN configuration
+   is a separate forwarding check, not an explanation by itself for a physical
+   link remaining down.
+4. **Addressing:** once link and forwarding work, check learned device MAC,
+   DHCP activity/lease, and the expected IP path. A reachable switch management
+   interface does not establish reachability of a device on another port/VLAN.
+
+The standard MIBs distinguish [interface state](https://www.rfc-editor.org/rfc/rfc2863.html),
+[PoE delivery](https://www.rfc-editor.org/rfc/rfc3621.html), and
+[VLAN/PVID configuration](https://www.rfc-editor.org/rfc/rfc4363.html).
+Keep community strings, credentials, identities, and inventories private.
+These observations require no SNMP SET or switch configuration change.
+
+In the [post-core switch checks](case-study.md#post-core-switch-and-link-checks),
+the uplink was 1 Gbps, while the SLZB port supplied PoE but stayed operationally
+down. About 1 W total draw against a 46 W budget did not show budget exhaustion;
+it did not rule out a device-side power, cable, port, or PHY problem. A controlled
+physical cable/port comparison was still pending. Keep one variable at a time
+and preserve VLAN membership when performing that comparison.
+
+Keep UART observation long enough to distinguish repeated link events from
+an actual boot sequence and delayed fallback behavior. In this session, core
+`2.5.2` logged fallback Wi-Fi AP and web-server startup at 61 seconds while
+Ethernet transitions continued. A 90-second capture showed one initial boot
+when the serial connection opened, with no subsequent reboot or panic.
+Record serial-induced resets separately from spontaneous ones. An AP-start
+log offers another diagnostic
+avenue, but does not prove that a client can associate or open the web UI.
+Check the device's actual AP configuration and verify those steps separately;
+do not infer restored Ethernet or Zigbee communication from the log alone.
 
 ## Core mode, LEDs, and serial ownership
 
