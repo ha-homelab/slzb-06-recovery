@@ -98,8 +98,11 @@ deliberately supplies no universal full-image write command.
 
 For the specific original board and image used here, the
 [guarded USB helper](usb-core-upgrade.md) provides a complete snapshot and an
-explicit 2.5.2 write path. That write and UART boot were verified; Ethernet and
-live device validation after it remain pending. It rejects different images,
+explicit 2.5.2 write path. That write and UART boot were verified; later,
+Ethernet and three post-core live reads recovered after a network-path change
+and a USB-to-LAN mode correction. See the [final validation](case-study.md#final-post-core-recovery)
+and [2.5.2 mode/API checks](troubleshooting.md#core-252-http-works-but-the-radio-tcp-port-does-not).
+The helper rejects different images,
 unexpected identities, unverified backups, secure boot, and flash encryption.
 
 ## Can TFTP or the bootloader bypass this?

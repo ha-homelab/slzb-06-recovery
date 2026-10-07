@@ -14,6 +14,9 @@ branches can change; consult the source matching your installed version.
 - [Legacy SLZB-06 firmware source](https://github.com/smlight-dev/slzb-06-firmware):
   `web.cpp` API enums, `/update` implementation, configuration export, and
   bootloader commands; `main.cpp` serial buffer and USB/LAN mode behavior.
+  The later core `2.5.2` mode form, `/api2` mode/reboot requests, and `/ha_info`
+  fields were checked against the running device's served UI/JavaScript and
+  actual responses, not inferred from this legacy source.
 - [ESP32 update guide](https://github.com/smlight-dev/slzb-06-manual/blob/main/docs/guide/flashing-and-updating/updating-esp32.md):
   supported migration methods and USB web-flasher requirements.
 - [CC2652P update guide](https://github.com/smlight-dev/slzb-06-manual/blob/main/docs/guide/flashing-and-updating/updating-cc2652p.md):

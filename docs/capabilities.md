@@ -44,7 +44,10 @@ It proved a guarded legacy Ethernet **radio** upgrade and restoration of the
 same Zigbee network. Modern core OTA was rejected. After subsequent coordinator
 repositioning/reconnection, the three previously failing live device checks
 passed and routing returned; the exact cause was not isolated. A later full
-USB backup and core `2.5.2` write/boot were verified, but Ethernet recovery and
-live Zigbee validation after that migration remain pending. Hardware-programmer
+USB backup and core `2.5.2` write/boot were verified. Post-core Ethernet and
+three fresh live reads then recovered after bypassing the GS110TP PoE path
+and restoring LAN coordinator mode. HTTP can remain available in USB mode
+when keep-web is enabled, even though the TCP radio bridge is unavailable.
+The GS110TP path's exact failure cause was not isolated. Hardware-programmer
 recovery remains an untested alternative. See the [case study](case-study.md),
 [core guide](core-firmware.md), and [radio guide](radio-firmware.md).

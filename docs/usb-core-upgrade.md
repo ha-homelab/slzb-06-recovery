@@ -6,9 +6,11 @@ This detailed procedure follows the backup and radio checkpoints in the
 **Recorded outcome:** a complete 16 MiB snapshot passed block and whole-device
 MD5 checks, and its second private copy passed SHA-256 verification. The exact
 2.5.2 full image was written and verified; UART then confirmed firmware 2.5.2
-booting in LAN mode and communicating with the Zigbee chip. Ethernet recovery
-and live Zigbee checks after this core migration remain pending. The earlier
-successful device reads in the case study occurred before the core migration.
+booting in LAN mode and communicating with the Zigbee chip. Later, bypassing
+the GS110TP PoE path and restoring LAN mode from a subsequently observed USB
+mode recovered Ethernet, ZHA, and three fresh post-core live device reads.
+The [case study](case-study.md#final-post-core-recovery) separates those final
+checks from the earlier pre-core successes and the intermediate failures.
 
 This path is for the **original SLZB-06**, with ESP32 and the recorded 16 MiB
 flash part (JEDEC ID `0x1840ef`). It is deliberately narrower than esptool.
@@ -171,16 +173,21 @@ USB assignment as described in the VMM guide. Re-enable the intended Zigbee
 host and verify it reconnects. Do not leave a temporary troubleshooting USB
 attachment as an undocumented permanent VM dependency.
 
-In this session, the temporary attachment was successfully removed with
+Immediately after the write, the temporary attachment was successfully removed with
 `detach-device --live`, and no USB hostdev remained on the VM. ZHA was re-enabled
 without restarting Home Assistant, but remained in `setup_retry` because the
 coordinator host was unreachable. UART showed Ethernet link transitions and no
 DHCP address; no coordinator Ethernet traffic was observed in a bounded host
-capture. Those observations do not yet isolate an uplink, cable, configuration,
-or firmware cause. They do not undo the verified write/boot, and they do not
-establish post-core Zigbee recovery.
+capture. Those observations did not isolate an uplink, cable, configuration,
+or firmware cause and did not establish post-core Zigbee recovery at that stage.
 Subsequent saved switch changes and a verified reboot also did not restore
-the link; see the [current network outcome](case-study.md#authorized-switch-reconfiguration).
+the link. Finally, direct Ethernet to the home switch without the GS110TP PoE
+path restored DHCP and HTTP at 100 Mbps while USB remained connected to
+Synology. The core was then observed in USB mode with keep-web enabled;
+switching to LAN mode and rebooting restored TCP 6638 and ZHA. Three fresh
+uncached device reads passed after that correction. See the
+[final network outcome](case-study.md#final-post-core-recovery) and
+[version-specific mode checks](troubleshooting.md#core-252-http-works-but-the-radio-tcp-port-does-not).
 
 References: [esptool basic commands](https://docs.espressif.com/projects/esptool/en/latest/esp32/esptool/basic-commands.html)
 and [core migration context](core-firmware.md).

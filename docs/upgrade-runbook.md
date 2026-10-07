@@ -15,13 +15,16 @@ The route recorded here was:
 4. Establish reliable USB through Synology VMM and an Ubuntu guest; capture and
    verify all 16 MiB of ESP32 flash.
 5. Write the exact official core `2.5.2` full image at `0x0` and verify its boot.
-6. Diagnose the remaining post-core Ethernet issue and repeat all network/live
-   checks before declaring full recovery.
+6. Restore post-core Ethernet through a network-path bypass, correct USB mode
+   to LAN, and repeat the network/live checks.
 
 **Completed:** radio write/CRC, same-network restoration, three successful live
-reads before the core migration, full ESP32 backup, and core `2.5.2` write/UART
-boot. **Not yet established:** post-core Ethernet and live Zigbee recovery.
-The earlier live reads do not satisfy the final post-core checkpoint.
+reads before the core migration, full ESP32 backup, core `2.5.2` write/UART boot,
+and **three new successful live reads after post-core Ethernet/TCP recovery**.
+The final fresh complete network backup also passed all 12 comparisons against
+the pre-core recovered-network backup.
+The exact cause of the failed GS110TP PoE path was not isolated. Earlier
+pre-core reads were kept separate from the final post-core checkpoint.
 
 ## 1. Identify the target and prepare private working files
 
@@ -331,6 +334,21 @@ do not inject legacy JSON into a changed schema. Close USB serial clients and
 detach the temporary VMM device with `detach-device ... --live`, then verify
 it is absent. Keep the private backups; guest driver packages may remain.
 
+Test the network and bridge separately. The verified final path was Ethernet
+directly to the home switch without the GS110TP PoE path, while USB remained
+connected to Synology for power/data. DHCP and HTTP returned at 100 Mbps, but
+TCP 6638 still refused connections because the core was in **USB mode with
+keep-web enabled**. A responding website does not establish a working bridge.
+
+For confirmed original SLZB-06 hardware running **core 2.5.2**, follow the
+[version-specific mode correction](troubleshooting.md#core-252-http-works-but-the-radio-tcp-port-does-not):
+check `coordMode` (`2` means USB), select LAN in the UI, retain keep-web, save,
+and reboot. The observed form used multipart fields `coordMode=0`, `keepWeb=on`,
+and `pageId=1` at `/saveParams`; the reboot used `/api2?action=4&cmd=3`.
+Require `coordMode=0` after reboot, working DHCP/IP, and an open bridge port.
+Use this version's UI/API, not the legacy `0.9.9` action numbers. This mode
+change does not require rewriting the radio or creating a new Zigbee network.
+
 Re-enable ZHA and query its real state. Once Ethernet/TCP access works, perform
 the same complete backup/comparison and uncached reads again:
 
@@ -346,13 +364,24 @@ python3 scripts/compare_network.py \
   live-read --ieee 00:00:00:00:00:00:00:01
 ```
 
+If ZHA was already enabled and retrying an unreachable endpoint, the actual
+recovery used one reload of the existing entry instead of another enable:
+
+```sh
+.venv-ha/bin/python scripts/ha_zha.py --url https://ha.example.test \
+  reload --entry-id REPLACE_WITH_ZHA_ENTRY_ID --execute
+```
+
+The recorded reload returned `require_restart=false`; HA did not need a full
+restart. Check `status` again, then run the fresh backup and live-read commands.
+
 Repeat the live read for several known paired mains devices. Require the
 intended running radio version, preserved identity/keys, acceptable counters,
 fresh routes/neighbors, and actual responses. A host-unreachable `setup_retry`
 is an Ethernet/IP boundary failure; repeated network restores or radio erases
 are not a remedy. A loaded entry alone is not the final recovery checkpoint.
 
-In this session the post-core link remained unresolved: the correct GS110TP
+In this session the post-core link was initially unresolved: the correct GS110TP
 was reachable, its uplink was 1 Gbps, and the coordinator received PoE while
 its port was operationally down. A 90-second UART capture showed recurring
 Ethernet events with no repeat reboot/panic after the initial serial-open boot;
@@ -365,6 +394,24 @@ PoE returned, but the coordinator port remained down with no DHCP/address/HTTP.
 The switch's built-in cable test had reported normal at about 2 m; that did not
 prove the full Ethernet path good. **The reboot did not complete recovery.**
 Do not treat those case-specific changes as required firmware-upgrade steps.
+
+The later direct-Ethernet bypass and USB-to-LAN mode fix did complete live
+recovery. LAN mode survived reboot; ZHA loaded and directly reported radio
+`20240710`, the unchanged coordinator IEEE, and channel 25. **Three new uncached
+manufacturer reads passed after the core migration**: two paired mains outlets
+and one CREE bulb. No actuator command, re-pairing, or channel change occurred.
+The web UI's radio version could remain `-1`/stale, so the direct ZHA query was
+used. See the [final case-study checks](case-study.md#final-post-core-recovery).
+
+A newly created complete post-core ZHA backup contained 13 known addresses
+and 13 key-table entries. **All 12 comparisons** against the fresh pre-core
+recovered-network backup passed, including preserved identity/keys/sequences
+and nondecreasing counters. This confirms the checkpoint for the tested
+devices; it does not assert that every historical device is online.
+
+Do not attribute every earlier failure to the later USB mode: the earlier
+UART capture explicitly showed LAN mode. The GS110TP path's cable, port, PHY,
+power, and interoperability possibilities were not isolated from one another.
 
 Use [switch identity, power, link, VLAN, then DHCP](troubleshooting.md#separate-switch-identity-power-link-vlan-and-dhcp)
 to isolate this boundary. Preserve VLAN membership when comparing ports.
