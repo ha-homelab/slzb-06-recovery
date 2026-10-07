@@ -194,6 +194,33 @@ was unreachable. UART showed Ethernet link transitions without a DHCP address,
 and a bounded host capture saw no coordinator Ethernet packets. The LAN path
 is still under investigation; **post-core live Zigbee validation is pending**.
 
+## Post-core switch and link checks
+
+Read-only NSDP discovery from the Synology host identified the actual
+**NETGEAR GS110TP**, distinct from a **GS308Ev4** discovered earlier. SNMP v2c
+read queries to the GS110TP worked; no switch configuration writes were made.
+The uplink reported **1 Gbps**. The coordinator's port was administratively
+enabled but operationally down, while PoE reported `deliveringPower`.
+Total reported power draw was approximately **1 W against a 46 W budget**.
+Thus PoE supply and switch management access were present without a working
+coordinator data link; these readings did not establish power quality at the
+device or identify a failing component.
+
+Existing PVIDs differed between switch ports. A random move to another PoE
+port could therefore change LAN membership, so a cable/port comparison needs
+to preserve the intended VLAN settings. The recorded VLAN differences do not
+by themselves explain the physical operational-down state.
+
+Core `2.5.2` UART continued alternating `ETH_CONNECTED` and `ETH_DISCONNECTED`
+approximately every **12–14 seconds**, while switch observations showed the
+port down and no device MAC/DHCP activity was seen. At least **50 seconds** of
+UART observation contained no reboot or panic; a longer capture and a
+controlled physical cable/port test were still pending. This is a bounded
+observation, not proof that no reset could occur later or that firmware,
+power, cabling, or the PHY has been isolated as the cause. **Post-core Ethernet
+and Zigbee recovery remain unresolved.** Raw identities, credentials, and
+network inventories are omitted.
+
 ## Limits and remaining options
 
 - Radio firmware and ESP32 core have independent upgrade paths.
