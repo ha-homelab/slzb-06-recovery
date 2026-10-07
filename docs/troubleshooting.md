@@ -66,6 +66,17 @@ it did not rule out a device-side power, cable, port, or PHY problem. A controll
 physical cable/port comparison was still pending. Keep one variable at a time
 and preserve VLAN membership when performing that comparison.
 
+Keep UART observation long enough to distinguish repeated link events from
+an actual boot sequence and delayed fallback behavior. In this session, core
+`2.5.2` logged fallback Wi-Fi AP and web-server startup at 61 seconds while
+Ethernet transitions continued. A 90-second capture showed one initial boot
+when the serial connection opened, with no subsequent reboot or panic.
+Record serial-induced resets separately from spontaneous ones. An AP-start
+log offers another diagnostic
+avenue, but does not prove that a client can associate or open the web UI.
+Check the device's actual AP configuration and verify those steps separately;
+do not infer restored Ethernet or Zigbee communication from the log alone.
+
 ## Core mode, LEDs, and serial ownership
 
 In core `0.9.9`, the blue LED indicates USB mode. A short button press toggles

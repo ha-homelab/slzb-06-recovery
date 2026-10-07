@@ -213,9 +213,16 @@ by themselves explain the physical operational-down state.
 
 Core `2.5.2` UART continued alternating `ETH_CONNECTED` and `ETH_DISCONNECTED`
 approximately every **12–14 seconds**, while switch observations showed the
-port down and no device MAC/DHCP activity was seen. At least **50 seconds** of
-UART observation contained no reboot or panic; a longer capture and a
-controlled physical cable/port test were still pending. This is a bounded
+port down and no device MAC/DHCP activity was seen. A completed **90-second**
+UART capture contained one boot at serial-open start and no subsequent reboot
+or panic. It recorded six Ethernet connect/disconnect pairs, the last at
+80/82 seconds. At **61 seconds**, UART reported `EVENT_WIFI_AP_START`,
+`Webserver started`, and `AP started`. These are firmware reports of fallback
+AP/web startup; independent Wi-Fi association and web access were not tested.
+No IP/DHCP was observed. After capture, the serial connection was closed and
+the temporary VM USB assignment was removed and verified absent.
+
+A controlled physical cable/port test was still pending. This is a bounded
 observation, not proof that no reset could occur later or that firmware,
 power, cabling, or the PHY has been isolated as the cause. **Post-core Ethernet
 and Zigbee recovery remain unresolved.** Raw identities, credentials, and
