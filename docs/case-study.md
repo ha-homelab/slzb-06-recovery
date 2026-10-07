@@ -308,12 +308,19 @@ paired mains outlets and one CREE bulb. No actuator command, re-pairing, or
 channel change was performed. The core web UI's radio-version field could
 remain `-1`/stale; the direct ZHA radio query was the version evidence.
 
+At approximately two minutes of uptime after the mode-fix reboot, the device
+page still reported LAN mode, port 6638, 115200 baud, and one connected client.
+The runtime log contained no `EVENT_ETH_DISCONNECTED` since that boot. This is
+a bounded post-recovery observation, not a long-term stability test.
+
 A **new complete ZHA backup** was then created through
 `zha/network/backups/create` with `is_complete=true`, 13 known network addresses,
 and 13 key-table entries. Compared with the fresh recovered-network backup
 from before the core migration, **all 12 checks passed**: coordinator IEEE,
 channel/PAN/extended PAN, network and trust-center keys/sequences, and counters
 that had not decreased. No private values are published.
+The private recovery archive was updated with this backup, comparison, and
+current diagnostics; its integrity and the retained original dump were rechecked.
 
 This passes the post-core recovery checkpoint for the three tested devices;
 it does not establish the state of every historical paired device. The GS110TP
