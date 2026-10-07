@@ -215,7 +215,7 @@ Core `2.5.2` UART continued alternating `ETH_CONNECTED` and `ETH_DISCONNECTED`
 approximately every **12–14 seconds**, while switch observations showed the
 port down and no device MAC/DHCP activity was seen. A completed **90-second**
 UART capture contained one boot at serial-open start and no subsequent reboot
-or panic. It recorded six Ethernet connect/disconnect pairs, the last at
+or panic. It recorded recurring Ethernet connect/disconnect pairs, the last at
 80/82 seconds. At **61 seconds**, UART reported `EVENT_WIFI_AP_START`,
 `Webserver started`, and `AP started`. These are firmware reports of fallback
 AP/web startup; independent Wi-Fi association and web access were not tested.
