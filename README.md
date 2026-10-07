@@ -18,9 +18,11 @@ Our [case study](docs/case-study.md) records unsuccessful core OTA attempts,
 a verified radio upgrade to Z-Stack `20240710`, and recovery of three live
 device reads after repositioning/reconnection. A later USB migration captured
 a verified full 16 MiB backup and successfully wrote and booted core `2.5.2`.
-**Ethernet recovery and live Zigbee validation after that core migration are
-still pending.** The earlier live successes must not be read as post-core
-validation. Read the results and limitations before choosing a procedure.
+**Post-core Ethernet and three fresh live Zigbee reads also recovered** after
+bypassing the GS110TP PoE path and correcting the core's USB/LAN mode. The
+fresh complete network backup passed all 12 comparisons with pre-core state.
+The exact cause of the GS110TP path failure was not isolated. Read the separate
+firmware, network, and live-response checkpoints before choosing a procedure.
 
 ## Start here
 
@@ -30,7 +32,7 @@ OTA path → upgrade/validate the radio → prepare USB → snapshot all ESP32 f
 → write/boot core `2.5.2` → verify runtime connectivity. It includes runnable
 commands, exact upstream images/checksums, stop points, and rollback limits.
 
-- For the evidence and current unresolved network outcome, read the
+- For the evidence and final recovery outcome, read the
   [chronological case study](docs/case-study.md).
 - For a fault without a planned upgrade, start with
   [troubleshooting by layer](docs/troubleshooting.md).

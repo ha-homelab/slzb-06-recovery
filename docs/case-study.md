@@ -5,12 +5,12 @@ and private deployment details. It distinguishes observations from inference.
 For the ordered procedure and runnable commands, use the
 [complete upgrade and recovery runbook](upgrade-runbook.md).
 
-**Outcomes by stage:** after the radio upgrade and coordinator repositioning/
-reconnection, three live device checks passed without a channel change or
-re-pairing. Later, a full USB backup and core `2.5.2` write/boot were verified.
-Ethernet recovery and live Zigbee checks **after the core migration remain
-pending**. The sequence below preserves those separate checkpoints and does
-not isolate a single root cause.
+**Final outcome:** radio `20240710` and core `2.5.2` were written and verified,
+and **three fresh live Zigbee reads passed after the core migration**. Recovery
+required bypassing the GS110TP PoE path and correcting a subsequently observed
+USB coordinator mode to LAN mode. No channel change or re-pairing occurred.
+The sequence below preserves earlier successes and intermediate failures;
+the exact cause of the GS110TP path failure was not isolated.
 
 ## Starting point
 
@@ -198,7 +198,8 @@ persistent VM settings and DSM host modules were unchanged. ZHA was re-enabled
 without restarting HA, but entered `setup_retry` because the coordinator host
 was unreachable. UART showed Ethernet link transitions without a DHCP address,
 and a bounded host capture saw no coordinator Ethernet packets. The LAN path
-is still under investigation; **post-core live Zigbee validation is pending**.
+was still under investigation at this stage; post-core live validation had
+not yet succeeded. The later recovery is recorded below.
 
 ## Post-core switch and link checks
 
@@ -232,8 +233,8 @@ the temporary VM USB assignment was removed and verified absent.
 
 A controlled physical cable/port test was still pending. This is a bounded
 observation, not proof that no reset could occur later or that firmware,
-power, cabling, or the PHY has been isolated as the cause. **Post-core Ethernet
-and Zigbee recovery remain unresolved.** Raw identities, credentials, and
+power, cabling, or the PHY has been isolated as the cause. Post-core Ethernet
+and Zigbee recovery were still unresolved at this stage. Raw identities, credentials, and
 network inventories are omitted.
 
 ## Authorized switch reconfiguration
@@ -274,16 +275,69 @@ configuration records as well as the UART and switch observations; the original
 16 MiB backup SHA-256 and archive integrity were rechecked. No private dump,
 credential, device identity, or household topology is included in this repository.
 
+## Final post-core recovery
+
+The operator removed the GS110TP PoE path and connected Ethernet directly to
+the home switch without PoE, while USB power/data remained connected to
+Synology. The coordinator obtained DHCP at its original reserved address;
+its Ethernet identity was checked privately. HTTP now worked at **100 Mbps**
+and showed **core `2.5.2`**. This bypass recovered the LAN path, but did not
+isolate a cable, port, PHY, power, or interoperability fault in the GS110TP path.
+
+HTTP availability was not sufficient: the device was now in **USB mode**,
+with `keepWeb=true`, and TCP **6638 refused connections**. The actual `2.5.2`
+API returned `coordMode=2`, `/ha_info` reported `Info.coord_mode=2`, and UART
+said `Coordinator mode: USB`; the blue mode LED matched that state. An earlier
+UART boot had explicitly reported LAN mode, so this later USB mode does not
+explain all preceding Ethernet failures. The operator also observed the blue
+LED go off and return after about five seconds when using the button; the
+reason for that behavior was not established.
+
+After checking the actual `2.5.2` web form/API, coordinator mode was saved as
+LAN (`coordMode=0`) with keep-web enabled and the core rebooted. The response
+was `200 ok`, the mode query returned `0`, and LAN mode survived reboot. UART
+confirmed LAN mode, DHCP/100 Mbps, and `[ZBCHK] Connection OK`; TCP 6638 opened.
+The [version-specific mode guide](troubleshooting.md#core-252-http-works-but-the-radio-tcp-port-does-not)
+records the exact form fields and endpoint distinction from `0.9.9`.
+
+Reloading the **existing** ZHA entry once returned `require_restart=false`.
+ZHA reached `loaded` and directly identified **Z-Stack `20240710`**, the same
+coordinator IEEE, and unchanged channel **25**. Three fresh **uncached Basic
+manufacturer reads all succeeded after the core migration**: two previously
+paired mains outlets and one CREE bulb. No actuator command, re-pairing, or
+channel change was performed. The core web UI's radio-version field could
+remain `-1`/stale; the direct ZHA radio query was the version evidence.
+
+At approximately two minutes of uptime after the mode-fix reboot, the device
+page still reported LAN mode, port 6638, 115200 baud, and one connected client.
+The runtime log contained no `EVENT_ETH_DISCONNECTED` since that boot. This is
+a bounded post-recovery observation, not a long-term stability test.
+
+A **new complete ZHA backup** was then created through
+`zha/network/backups/create` with `is_complete=true`, 13 known network addresses,
+and 13 key-table entries. Compared with the fresh recovered-network backup
+from before the core migration, **all 12 checks passed**: coordinator IEEE,
+channel/PAN/extended PAN, network and trust-center keys/sequences, and counters
+that had not decreased. No private values are published.
+The private recovery archive was updated with this backup, comparison, and
+current diagnostics; its integrity and the retained original dump were rechecked.
+
+This passes the post-core recovery checkpoint for the three tested devices;
+it does not establish the state of every historical paired device. The GS110TP
+path's exact failure cause remains unproven; the observed bypass and mode
+correction established recovery under the final conditions, not a universal
+GS110TP repair.
+
 ## Limits and remaining options
 
 - Radio firmware and ESP32 core have independent upgrade paths.
 - A network firmware write is viable on this old core with a carefully adapted
   transport, but has erase/interruption risk and needs backups.
 - The verified USB core migration required a working data/bootloader path;
-  normal LAN access still needs separate post-boot validation.
+  normal LAN access required separate post-boot validation and correction.
 - A fresh live response from real devices is the recovery criterion. Firmware
   version and integration status alone are insufficient. Three live reads
-  and routing evidence validated the radio stage; those checks must be
-  repeated after the subsequent core migration.
+  and routing evidence validated the radio stage. A second set of three
+  uncached reads after the core migration established final live recovery.
 - Matter health is tracked independently; this radio write does not establish
   any change to Matter devices.
