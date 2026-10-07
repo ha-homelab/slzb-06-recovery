@@ -2,6 +2,8 @@
 
 This record removes household addresses, device identities, secrets, raw logs,
 and private deployment details. It distinguishes observations from inference.
+For the ordered procedure and runnable commands, use the
+[complete upgrade and recovery runbook](upgrade-runbook.md).
 
 **Outcomes by stage:** after the radio upgrade and coordinator repositioning/
 reconnection, three live device checks passed without a channel change or
@@ -14,7 +16,8 @@ not isolate a single root cause.
 
 After a household power outage, Home Assistant's Zigbee and some Matter devices
 were reported unavailable. The Zigbee adapter was an original SMLIGHT SLZB-06,
-with ESP32-D0WDQ5 reporting 16 MiB physical flash, core `0.9.9` (March 3, 2023),
+with its legacy UI reporting ESP32-D0WDQ5 and 16 MiB physical flash,
+core `0.9.9` (March 3, 2023),
 and a CC2652P running Z-Stack `20230507`.
 
 PoE powered the unit, but the initially isolated switch and then a bad uplink
@@ -159,6 +162,9 @@ The Synology host enumerated a CP2102N (`10c4:ea60`), passed temporarily to a
 Linux guest with VMM's `--live` USB attachment. The guest required its matching
 Ubuntu `linux-modules-extra` package and `cp210x`; no DSM host modules were
 changed. See the [temporary passthrough guide](synology-usb-passthrough.md).
+The later USB ROM/esptool identification was **ESP32-D0WD-V3 revision 3.1**,
+with a 40 MHz crystal. This differs from the legacy UI's chip-name string;
+the UI string is not an independently confirmed packaging requirement.
 
 Initial transfers failed with both virtual UHCI and xHCI. Smaller 1 KiB packets
 and a one-packet window alone did not cure the failures; the guest reported
@@ -199,6 +205,8 @@ is still under investigation; **post-core live Zigbee validation is pending**.
 Read-only NSDP discovery from the Synology host identified the actual
 **NETGEAR GS110TP**, distinct from a **GS308Ev4** discovered earlier. SNMP v2c
 read queries to the GS110TP worked; no switch configuration writes were made.
+This describes the discovery stage; a later separately authorized change is
+recorded below.
 The uplink reported **1 Gbps**. The coordinator's port was administratively
 enabled but operationally down, while PoE reported `deliveringPower`.
 Total reported power draw was approximately **1 W against a 46 W budget**.
@@ -227,6 +235,44 @@ observation, not proof that no reset could occur later or that firmware,
 power, cabling, or the PHY has been isolated as the cause. **Post-core Ethernet
 and Zigbee recovery remain unresolved.** Raw identities, credentials, and
 network inventories are omitted.
+
+## Authorized switch reconfiguration
+
+The operator later explicitly requested a flat switch configuration. This was
+a separate network change, not a required part of flashing the SLZB-06. Private
+before/after records were saved before changing it. All ten physical ports
+and four logical LAG interfaces were assigned the same PVID and untagged
+membership in one existing LAN VLAN. The old WAN VLAN was removed; the built-in
+reserved VLANs had no member ports. The management address and management VLAN
+were not changed. Actual VLAN numbers, port assignments, and inventories are
+not reproduced here.
+
+The old switch firmware did not accept identically interpreted egress and
+untagged masks for every operation; some changes required separate SETs.
+Completion was established by reading the **effective current VLAN table** and
+all fourteen PVIDs, not by assuming a submitted mask meant what was intended.
+The configuration save reported `savingComplete (3)`. These quirks are why this
+project does not provide generic bulk SNMP mutation commands.
+
+The built-in cable test on the coordinator port reported **normal**, with an
+estimated length of **2 m**. The port nevertheless remained operationally down,
+while the uplink was up at 1 Gbps. This diagnostic result did not prove the
+cable, connectors, or either Ethernet PHY fully functional.
+
+After confirming the configuration was saved, the operator authorized a
+switch reboot. The reset request timed out as the switch went offline. The
+first SNMP response, 36 seconds after polling began, showed a fresh 24-second
+uptime. Comparison of **55 relevant values** before and after boot confirmed
+that the effective VLAN memberships, static configuration, and all fourteen
+PVIDs persisted. The uplink returned and the coordinator port again reported
+PoE delivery, but its Ethernet link remained down, with no coordinator
+DHCP/address/HTTP access. **The successful switch reboot did not restore the
+coordinator Ethernet path or complete post-core Zigbee validation.**
+
+The recovery archive remains private. It includes device/HA backups and
+configuration records as well as the UART and switch observations; the original
+16 MiB backup SHA-256 and archive integrity were rechecked. No private dump,
+credential, device identity, or household topology is included in this repository.
 
 ## Limits and remaining options
 

@@ -1,5 +1,7 @@
 # Backups and restoring the same Zigbee network
 
+This is the backup stage of the [complete upgrade runbook](upgrade-runbook.md).
+
 Back up **before** any erase/write operation. Use a private destination on the
 machine doing the work, copy it to a second secure location, and check that it
 can be read. A checksum detects changed bytes; it does not prove restore works.

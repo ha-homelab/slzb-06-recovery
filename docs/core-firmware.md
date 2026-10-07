@@ -1,5 +1,8 @@
 # ESP32 core firmware: OTA, USB, and partition limits
 
+This is the partition/background reference for the
+[complete upgrade runbook](upgrade-runbook.md).
+
 The core controls networking and the web UI. Its version is separate from
 Z-Stack on the Zigbee chip. Check the exact model before downloading anything
 from the [official firmware catalog](https://updates.smlight.tech/firmware/slzb06x/core/).
@@ -41,6 +44,8 @@ The modern table above describes the downloaded full images; the legacy table
 was confirmed on the device itself. Physical flash capacity was 16 MiB despite
 its small legacy OTA slots. A newer factory layout running an old application
 can therefore behave differently from an original old layout.
+Core `3.3.1` was only downloaded/inspected; it was not installed or tested at
+runtime. The successful write and boot recorded here used `2.5.2`.
 
 ## Observed attempts
 

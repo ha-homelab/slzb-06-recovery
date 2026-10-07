@@ -2,6 +2,8 @@
 
 An outage can affect power, Ethernet, IP routing, the serial bridge, the radio,
 and Home Assistant independently. Test each boundary before updating firmware.
+For the complete ordered upgrade path, start with the
+[upgrade and recovery runbook](upgrade-runbook.md).
 
 ## Power and Ethernet
 
@@ -58,6 +60,8 @@ The standard MIBs distinguish [interface state](https://www.rfc-editor.org/rfc/r
 [VLAN/PVID configuration](https://www.rfc-editor.org/rfc/rfc4363.html).
 Keep community strings, credentials, identities, and inventories private.
 These observations require no SNMP SET or switch configuration change.
+The later [authorized switch redesign](case-study.md#authorized-switch-reconfiguration)
+was separate from those read-only checks and is not a general recovery step.
 
 In the [post-core switch checks](case-study.md#post-core-switch-and-link-checks),
 the uplink was 1 Gbps, while the SLZB port supplied PoE but stayed operationally
@@ -65,6 +69,15 @@ down. About 1 W total draw against a 46 W budget did not show budget exhaustion;
 it did not rule out a device-side power, cable, port, or PHY problem. A controlled
 physical cable/port comparison was still pending. Keep one variable at a time
 and preserve VLAN membership when performing that comparison.
+
+A built-in switch cable test later reported a normal cable of about 2 m while
+the coordinator port remained down. Treat that as one test result, not proof
+of a working Ethernet path. Saving the explicitly requested flat VLAN setup,
+rebooting the switch, and verifying 55 persisted values also failed to restore
+this port's link. A successful switch reboot or preserved VLAN configuration
+does not substitute for checking the device port, DHCP, and actual HTTP/TCP.
+On old firmware, inspect effective egress/untagged membership and PVIDs after
+changes; a successful SET response alone is not evidence of the intended result.
 
 Keep UART observation long enough to distinguish repeated link events from
 an actual boot sequence and delayed fallback behavior. In this session, core

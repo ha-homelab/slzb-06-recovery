@@ -1,5 +1,8 @@
 # Synology VMM to a Linux guest: temporary USB ownership
 
+Use this host setup within the [complete upgrade runbook](upgrade-runbook.md),
+before the verified ESP32 snapshot and guarded write.
+
 The case-study host reliably enumerated CP2102N **`10c4:ea60`** while the Mac
 transport was unreliable. That exact USB device was attached temporarily to a
 Linux VM through VMM's libvirt tooling. Driver installation occurred **inside
