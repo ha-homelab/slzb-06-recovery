@@ -61,7 +61,7 @@ python3 scripts/slzb.py --url http://192.0.2.10 status
 python3 scripts/slzb.py --help
 python3 scripts/radio_legacy.py --help
 python3.12 -m venv .venv-ha
-.venv-ha/bin/python -m pip install -r requirements-ha.txt
+.venv-ha/bin/python -m pip install --require-hashes -r requirements-ha.txt
 .venv-ha/bin/python -m unittest discover -s tests -v
 ```
 

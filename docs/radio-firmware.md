@@ -69,7 +69,7 @@ no requirement for a USB cable for this radio operation. Install the OS's
 
 ```sh
 python3.12 -m venv .venv-radio
-.venv-radio/bin/python -m pip install -r requirements-radio.txt
+.venv-radio/bin/python -m pip install --require-hashes -r requirements-radio.txt
 .venv-radio/bin/python -m pip check
 ```
 
