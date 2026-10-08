@@ -67,7 +67,7 @@ separately verified value:
 umask 077
 mkdir -p backups artifacts
 python3.12 -m venv .venv-ha
-.venv-ha/bin/python -m pip install -r requirements-ha.txt
+.venv-ha/bin/python -m pip install --require-hashes -r requirements-ha.txt
 python3 scripts/slzb.py --url http://192.0.2.10 status
 .venv-ha/bin/python scripts/ha_zha.py --url https://ha.example.test status
 ```
@@ -141,7 +141,7 @@ On the wired Linux host:
 
 ```sh
 python3.12 -m venv .venv-radio
-.venv-radio/bin/python -m pip install -r requirements-radio.txt
+.venv-radio/bin/python -m pip install --require-hashes -r requirements-radio.txt
 .venv-radio/bin/python -m pip check
 python3 scripts/fetch_firmware.py --out artifacts
 .venv-ha/bin/python scripts/ha_zha.py --url https://ha.example.test \
@@ -258,7 +258,7 @@ Inside the USB-owning host/guest:
 umask 077
 mkdir -p backups artifacts
 python3.12 -m venv .venv-core
-.venv-core/bin/python -m pip install -r requirements-core.txt
+.venv-core/bin/python -m pip install --require-hashes -r requirements-core.txt
 .venv-core/bin/python -m pip check
 .venv-core/bin/python scripts/esp32_core.py \
   --port /dev/ttyUSB0 --expect-base-mac 02:00:00:00:00:11 \

@@ -53,7 +53,7 @@ Create a virtual environment and install the HA client dependency:
 
 ```sh
 python3 -m venv .venv-ha
-.venv-ha/bin/python -m pip install -r requirements-ha.txt
+.venv-ha/bin/python -m pip install --require-hashes -r requirements-ha.txt
 umask 077
 mkdir -p backups
 .venv-ha/bin/python scripts/ha_zha.py --url https://ha.example.test \

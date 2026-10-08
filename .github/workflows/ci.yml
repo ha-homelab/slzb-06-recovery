@@ -18,8 +18,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
       - name: Install Home Assistant helper dependency
-        run: python3 -m pip install -r requirements-ha.txt
+        run: python3 -m pip install --require-hashes -r requirements-ha.txt
       - name: Unit tests and syntax checks (no hardware)
         run: |
           python3 -m unittest discover -s tests -v
@@ -29,3 +32,29 @@ jobs:
           python3 scripts/compare_network.py --help
           python3 scripts/ha_zha.py --help
           python3 scripts/esp32_core.py --help
+
+  dependency-locks:
+    name: Install ${{ matrix.lock }} without hardware access
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lock: [requirements-core.txt, requirements-radio.txt]
+    steps:
+      - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Verify the complete locked dependency set
+        env:
+          LOCK: ${{ matrix.lock }}
+        run: |
+          python -m venv /tmp/locked-tool
+          /tmp/locked-tool/bin/python -m pip install --require-hashes -r "$LOCK"
+          /tmp/locked-tool/bin/python -m pip check
