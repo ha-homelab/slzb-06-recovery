@@ -55,3 +55,15 @@ uv pip compile requirements-radio.in --generate-hashes --universal --python-vers
 ```
 
 Run the documented tests in a fresh virtual environment after updating a lock.
+
+## Source releases
+
+Use immutable Semantic Versioning tags (`vMAJOR.MINOR.PATCH`) for source snapshots.
+The first source release is `v0.1.0`; do not move an existing release tag.
+These versions identify the recovery helpers, tests and documentation. They are independent of ESP32 core and CC2652P radio firmware versions. Download firmware only through the documented upstream provenance checks; a source release does not flash a device or establish hardware acceptance.
+
+Before tagging, identify the exact reviewed commit and verify its required CI
+checks. Each release must link that commit and describe changes, upgrade
+implications and security impact, including known limits. GitHub source archives
+allow users to obtain the exact tagged tree; preserve all bundled licenses and
+upstream notices. Report defects against the source tag or full commit ID.
