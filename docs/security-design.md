@@ -25,6 +25,50 @@ unavailable dependencies, authorization failures and cancellation. A passing
 test run describes its fixtures and environment; it does not certify every
 upstream service, hardware model or production deployment.
 
+## Firmware downloader HTTPS profile
+
+`scripts/fetch_firmware.py` uses the standard-library HTTPS client, with normal
+certificate and hostname verification. The supported download profile is
+CPython 3.12 or newer with OpenSSL security level 2 or higher and a minimum of
+TLS 1.2. Keep Python and OpenSSL updated. Alternative implementations, older
+interpreters and vendor-modified TLS defaults are outside this verified profile.
+
+Run this with the same interpreter that will run the downloader. It reports the
+local defaults and exits unsuccessfully when the profile is not met:
+
+```sh
+python3 -c 'import platform, ssl, sys
+context = ssl.create_default_context()
+print(platform.python_implementation(), platform.python_version())
+print(ssl.OPENSSL_VERSION)
+print("security_level=", context.security_level,
+      "minimum_tls=", context.minimum_version.name,
+      "verify_mode=", context.verify_mode.name,
+      "check_hostname=", context.check_hostname)
+supported = (platform.python_implementation() == "CPython"
+             and sys.version_info >= (3, 12)
+             and context.security_level >= 2
+             and context.minimum_version >= ssl.TLSVersion.TLSv1_2
+             and context.verify_mode == ssl.CERT_REQUIRED
+             and context.check_hostname)
+raise SystemExit(0 if supported else 1)'
+```
+
+This checks the local runtime, not the identity of a remote host. Each HTTPS
+connection still verifies its peer. On CPython 3.12.14/OpenSSL 3.5.8, local tests
+of the actual downloader rejected RSA-1024 leaf, intermediate and root keys
+before any HTTP request or file write, under both TLS 1.2 and TLS 1.3. A trusted
+RSA-2048 chain downloaded and verified a synthetic ZIP/HEX pair. The test changed
+only the download URL and expected hashes to local fixtures; it did not replace
+the downloader's transport or lower its TLS policy. A separate client with a
+deliberately lower policy verified that each synthetic chain was otherwise
+usable. No device or real firmware was involved.
+
+The downloader also verifies the independently recorded SHA-256 values for
+both the archive and extracted image. Preserve those checks. This HTTPS profile
+does not add encryption to the legacy device's HTTP or serial-over-TCP recovery
+connections and does not establish the runtime policy of other host tools.
+
 ## Remaining security assessment
 
 Review legacy plaintext device protocols and documented firmware provenance against the delivery and cryptographic criteria. Record static-analysis and warning disposition; hardware acceptance is separate.
