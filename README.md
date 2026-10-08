@@ -62,6 +62,12 @@ and OpenSSL security level 2 or higher. Run the
 with the same interpreter before downloading. Keep that runtime updated; do not
 lower its TLS security settings to accept a weak server certificate.
 
+Use the same verified TLS profile for HTTPS coordinator URLs and Home Assistant
+HTTPS/WSS access. Install the hash-locked Home Assistant dependencies and check
+that virtual environment's interpreter; see the
+[Home Assistant and coordinator profile](docs/security-design.md#home-assistant-and-coordinator-httpswss-profile).
+Plain HTTP recovery remains limited to an isolated trusted network.
+
 ```sh
 python3 scripts/slzb.py --url http://192.0.2.10 status
 python3 scripts/slzb.py --help

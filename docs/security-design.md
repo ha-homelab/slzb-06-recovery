@@ -69,6 +69,45 @@ both the archive and extracted image. Preserve those checks. This HTTPS profile
 does not add encryption to the legacy device's HTTP or serial-over-TCP recovery
 connections and does not establish the runtime policy of other host tools.
 
+## Home Assistant and coordinator HTTPS/WSS profile
+
+The same CPython 3.12+ / OpenSSL security-level-2 / TLS-1.2-minimum profile
+applies when `scripts/slzb.py` receives an HTTPS coordinator URL and when
+`scripts/ha_zha.py` connects to Home Assistant through HTTPS and WSS. Both retain
+normal certificate and hostname verification. The coordinator helper uses
+standard-library `urllib`; the Home Assistant helper uses the standard verified
+`aiohttp` session. Neither helper lowers the TLS policy to accept a weak peer.
+
+Install `requirements-ha.txt` with `--require-hashes` as shown in the README.
+Run the [runtime check above](#firmware-downloader-https-profile) with
+`.venv-ha/bin/python` in place of `python3`, and inspect the installed dependency:
+
+```sh
+.venv-ha/bin/python -c 'import aiohttp; print(aiohttp.__version__)'
+```
+
+The checked dependency lock currently selects `aiohttp 3.14.4`. Keep both the
+lock and the interpreter updated. The verified runtime was CPython 3.12.14,
+OpenSSL 3.5.8 and aiohttp 3.14.4. Tests called the unchanged coordinator
+status/request and Home Assistant backup code against synthetic local servers:
+RSA-1024 leaf, intermediate and root keys were rejected under TLS 1.2 and 1.3.
+Coordinator and initial Home Assistant HTTPS failures occurred before HTTP or
+authentication. A separate WSS test allowed the initial verified HTTPS response,
+then offered the weak chain on the WebSocket connection; it was rejected before
+WebSocket HTTP, token exchange or backup output. Strong RSA-2048 chains completed
+the simulated status and backup flows; backup output retained mode `0600`.
+A separate lower-policy client verified the test certificates' trust and
+hostname validity. No actual coordinator, Home Assistant service or network
+backup was used.
+
+This profile only covers those HTTPS/WSS paths. An explicit HTTP URL remains
+plaintext, including any Home Assistant token sent over it; use an isolated
+trusted network for legacy recovery and HTTPS for Home Assistant whenever
+available. The serial bridge and upstream flashing tools have separate trust
+boundaries. A custom interpreter, TLS override or externally terminated proxy
+requires its own assessment. The host profile does not prove deployed device
+identity, firmware authenticity or safe hardware operations.
+
 ## Remaining security assessment
 
 Review legacy plaintext device protocols and documented firmware provenance against the delivery and cryptographic criteria. Record static-analysis and warning disposition; hardware acceptance is separate.
