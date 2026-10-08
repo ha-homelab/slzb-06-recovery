@@ -114,3 +114,9 @@ the distinction between observed behavior, source analysis, and hypotheses.
 [MIT](LICENSE) for original documentation and helpers. Firmware is downloaded
 from its upstream project and remains under its own terms. The SMLIGHT flasher
 is an external Apache-2.0 dependency; it is not vendored here.
+
+## Project maintenance
+
+See [contribution and test requirements](CONTRIBUTING.md), the
+[security reporting policy](SECURITY.md), [security design](docs/security-design.md),
+and the [OpenSSF evidence and remaining criteria](docs/openssf-evidence.md).
