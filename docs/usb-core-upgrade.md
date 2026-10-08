@@ -50,7 +50,7 @@ Install a separate environment inside the machine owning the USB port:
 
 ```sh
 python3.12 -m venv .venv-core
-.venv-core/bin/python -m pip install -r requirements-core.txt
+.venv-core/bin/python -m pip install --require-hashes -r requirements-core.txt
 .venv-core/bin/python -m pip check
 umask 077
 mkdir -p backups artifacts
