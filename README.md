@@ -56,6 +56,12 @@ the legacy radio wrapper needs `requirements-radio.txt` on a Linux host, and
 the USB core helper needs `requirements-core.txt`. None of the commands below
 flashes firmware.
 
+For firmware downloads, use CPython with its standard verified HTTPS defaults
+and OpenSSL security level 2 or higher. Run the
+[TLS runtime check](docs/security-design.md#firmware-downloader-https-profile)
+with the same interpreter before downloading. Keep that runtime updated; do not
+lower its TLS security settings to accept a weak server certificate.
+
 ```sh
 python3 scripts/slzb.py --url http://192.0.2.10 status
 python3 scripts/slzb.py --help
