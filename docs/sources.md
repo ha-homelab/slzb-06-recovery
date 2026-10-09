@@ -60,6 +60,36 @@ branches can change; consult the source matching your installed version.
   A unit retaining newer partitions is not evidence that an original legacy
   partition layout can fit the same image.
 
+## Hello Zigbee World field guide
+
+The README's field guide is an original English synthesis of parts 0–28 of
+Oleksandr Masliuchenko's series. Source text was reviewed from the author's
+public repository at commit
+[`8f59af2f5d734ec38375a42a36fbf66bd4b9fe75`](https://github.com/grafalex82/hellozigbee/tree/8f59af2f5d734ec38375a42a36fbf66bd4b9fe75/doc).
+The README links the current articles for convenient reading; this pinned
+revision identifies the edition summarized.
+
+- [Series index](https://github.com/grafalex82/hellozigbee/blob/8f59af2f5d734ec38375a42a36fbf66bd4b9fe75/doc/part0_plan.md).
+- [Part 28, original Medium publication](https://medium.com/@omaslyuchenko/hello-zigbee-world-part-28-remote-logging-and-flashing-of-zigbee-devices-2c0c60ff3ccb)
+  and [author's Markdown edition](https://github.com/grafalex82/hellozigbee/blob/8f59af2f5d734ec38375a42a36fbf66bd4b9fe75/doc/part28_remote_logger.md).
+  The public Markdown text was used because Medium was not accessible during review.
+- [RemoteLogger source](https://github.com/grafalex82/RemoteLogger/tree/99d1068de35d549ce56bc84ea4e12199c629114c):
+  UART modes, TCP direction and ports, GPIO assignments, lock scope, and reset behavior.
+- [JN51xx flasher](https://github.com/grafalex82/jn51xx_flasher) and
+  [NXP JN5169 datasheet](https://www.nxp.com/docs/en/data-sheet/JN5169.pdf):
+  device-specific context; neither is a TI CC2652P or ESP32 flashing procedure.
+- [ZHA documentation](https://www.home-assistant.io/integrations/zha/):
+  endpoint OTA, device quirks, groups, diagnostics, and third-party adapter firmware.
+- [diagram-design](https://github.com/cathrynlavery/diagram-design/tree/f4547ee95f88e5b28a52517feff6b6c11cc657f9):
+  design and export workflow used for the original illustrations. See
+  [diagram sources and reproduction](diagrams/README.md).
+
+No article text, article diagrams, firmware, or RemoteLogger implementation is
+vendored. Links do not extend this repository's MIT license to upstream material.
+The field guide and its diagrams are **source analysis**. They do not claim a
+new flash, a tested RemoteLogger deployment, or compatibility of the author's
+custom firmware with ZHA. The SLZB hardware evidence remains in the case study.
+
 ## How to interpret this repository
 
 **Observed** means an operation or result actually occurred on the case-study
