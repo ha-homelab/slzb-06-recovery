@@ -29,7 +29,21 @@
         "-max_len=4096"
       ],
       "seconds": 60,
-      "corpus": "fuzz/corpus/backup"
+      "corpus": "fuzz/corpus/backup",
+      "instrumentation": [
+        {
+          "module": "radio_legacy",
+          "functions": [
+            "find_network_backup"
+          ]
+        },
+        {
+          "module": "compare_network",
+          "functions": [
+            "compare"
+          ]
+        }
+      ]
     },
     {
       "name": "identity",
@@ -40,7 +54,30 @@
         "-max_len=4096"
       ],
       "seconds": 60,
-      "corpus": "fuzz/corpus/identity"
+      "corpus": "fuzz/corpus/identity",
+      "instrumentation": [
+        {
+          "module": "esp32_core",
+          "functions": [
+            "normalize_mac",
+            "validate_port"
+          ]
+        },
+        {
+          "module": "slzb",
+          "functions": [
+            "validate_base_url",
+            "validate_identity"
+          ]
+        }
+      ]
     }
+  ],
+  "preflight-paths": [
+    "fuzz",
+    "requirements-core.txt",
+    "requirements-ha.txt",
+    "requirements-radio.txt",
+    "scripts"
   ]
 }
