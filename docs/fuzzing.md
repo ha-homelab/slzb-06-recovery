@@ -53,3 +53,35 @@ and run a fresh RC. Do not suppress an unexpected exception in the harness to
 make the release pass. Reports from a different commit or a zero-execution run
 cannot qualify the candidate. Hardware acceptance remains a separate manual
 process described in the recovery runbook.
+
+
+## Deterministic preflight in ordinary CI
+
+For relevant changes in a public repository, the existing CI configuration
+contract job installs the hash-locked Python 3.12 fuzz dependencies, runs
+`pip check`, and replays the committed corpus with Atheris `-runs=0`.
+This is deterministic seed replay: it does not start the timed mutation
+campaign. Timed fuzzing remains exclusive to release candidates. The shared
+preflight has a four-minute total budget, including dependency setup.
+
+The `preflight-paths` entries in `.github/fuzz.json` select the relevant
+production, dependency and harness changes. Shared contract, manifest and
+workflow changes also trigger this check; missing comparison history runs
+the check conservatively. Unrelated changes can skip this extra replay.
+
+Before replay, the shared helper verifies that the following declarations
+refer to project-local Python functions already instrumented by the
+harness. Missing import instrumentation fails the check instead of
+silently counting executions with incomplete feedback:
+
+- `radio_legacy.find_network_backup`
+- `compare_network.compare`
+- `esp32_core.normalize_mac`
+- `esp32_core.validate_port`
+- `slzb.validate_base_url`
+- `slzb.validate_identity`
+
+Update these declarations when production functions move or are renamed.
+They prove that the selected code is instrumented; they do not prove
+exhaustive path coverage. Keep positive and rejected-input corpus cases
+and independent semantic assertions alongside the existing unit tests.
