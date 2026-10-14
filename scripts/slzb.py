@@ -61,11 +61,13 @@ def status(base_url):
 def validate_identity(state, expected_mac):
     if state.get("hwRev") != "SLZB-06":
         raise ValueError("This helper supports only the original SLZB-06")
-    if not re.match(r"^0\.9\.9(?:\s|$)", state.get("VERSION", "")):
+    core_version = state.get("VERSION")
+    if not isinstance(core_version, str) or not re.match(r"^0\.9\.9(?:\s|$)", core_version):
         raise ValueError("This helper's API is only validated on core 0.9.9")
     if not re.fullmatch(r"(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}", expected_mac):
         raise ValueError("Expected MAC must have six colon-separated bytes")
-    if state.get("ethMac", "").lower() != expected_mac.lower():
+    actual_mac = state.get("ethMac")
+    if not isinstance(actual_mac, str) or actual_mac.lower() != expected_mac.lower():
         raise ValueError("Ethernet MAC does not match the operator-supplied identity")
 
 

@@ -14,34 +14,38 @@ from slzb import request, status, validate_identity
 
 
 def find_network_backup(value):
-    """Accept one explicit backup; reject containers with ambiguous candidates."""
-    if isinstance(value, dict):
-        network = value.get("network_info")
-        if (isinstance(network, dict) and isinstance(value.get("node_info"), dict)
-                and value["node_info"].get("ieee")
-                and isinstance(network.get("network_key"), dict)
-                and network["network_key"].get("key")
-                and all(key in network for key in ("channel", "pan_id", "extended_pan_id"))):
-            return value
-        if "backup" in value:
+    """Select one backup with bounded traversal, preserving explicit selection."""
+    pending = [(value, 0)]
+    found = None
+    visited = 0
+    while pending:
+        current, depth = pending.pop()
+        visited += 1
+        if visited > 10000:
+            raise ValueError("Backup container is too large; export one selected backup")
+        if depth > 128:
+            raise ValueError("Backup container nesting is too deep")
+        if isinstance(current, dict):
+            network = current.get("network_info")
+            if (isinstance(network, dict) and isinstance(current.get("node_info"), dict)
+                    and current["node_info"].get("ieee")
+                    and isinstance(network.get("network_key"), dict)
+                    and network["network_key"].get("key")
+                    and all(key in network for key in ("channel", "pan_id", "extended_pan_id"))):
+                if found is not None:
+                    raise ValueError("Ambiguous backup container: export one explicitly selected complete backup")
+                found = current
+                continue
             # ha_zha.py explicitly selects the fresh complete backup here.
-            return find_network_backup(value["backup"])
-        found_items = []
-        for item in value.values():
-            found = find_network_backup(item)
-            if found:
-                found_items.append(found)
-    elif isinstance(value, list):
-        found_items = []
-        for item in value:
-            found = find_network_backup(item)
-            if found:
-                found_items.append(found)
-    else:
-        return None
-    if len(found_items) > 1:
-        raise ValueError("Ambiguous backup container: export one explicitly selected complete backup")
-    return found_items[0] if found_items else None
+            children = [current["backup"]] if "backup" in current else current.values()
+        elif isinstance(current, list):
+            children = current
+        else:
+            continue
+        if visited + len(pending) + len(children) > 10000:
+            raise ValueError("Backup container is too large; export one selected backup")
+        pending.extend((child, depth + 1) for child in children)
+    return found
 
 
 def validate_inputs(args):
