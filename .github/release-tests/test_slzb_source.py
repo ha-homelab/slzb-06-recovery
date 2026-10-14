@@ -52,7 +52,7 @@ class SourceDistributionTests(unittest.TestCase):
 
     def freeze(self, channel):
         plan = version_plan.create_plan(
-            "0.1.0",
+            "0.1.1",
             channel,
             7,
             self.command("git", "rev-parse", "HEAD").strip(),
@@ -76,12 +76,12 @@ class SourceDistributionTests(unittest.TestCase):
             "requirements-radio.txt",
         ]
         before = {name: (self.root / name).read_bytes() for name in independent}
-        for channel, expected in (("beta", "0.1.0-beta.7"), ("rc", "0.1.0")):
+        for channel, expected in (("beta", "0.1.1-beta.7"), ("rc", "0.1.1")):
             with self.subTest(channel=channel):
-                (self.root / "SOURCE_VERSION").write_text("0.1.0\n")
+                (self.root / "SOURCE_VERSION").write_text("0.1.1\n")
                 plan = self.freeze(channel)
                 output = self.root / channel
-                archive = package_source.build(self.root, "0.1.0", channel, output)
+                archive = package_source.build(self.root, "0.1.1", channel, output)
                 with tarfile.open(archive) as package:
                     self.assertEqual(
                         package.extractfile("slzb-06-recovery/SOURCE_VERSION")
@@ -110,7 +110,7 @@ class SourceDistributionTests(unittest.TestCase):
 
     def test_actual_extracted_offline_recovery_guards_pass(self):
         self.freeze("rc")
-        archive = package_source.build(self.root, "0.1.0", "rc", self.root / "output")
+        archive = package_source.build(self.root, "0.1.1", "rc", self.root / "output")
         package_source.verify(archive, self.root)
 
     def test_archive_is_reproducible_and_excludes_local_state(self):
@@ -119,8 +119,8 @@ class SourceDistributionTests(unittest.TestCase):
         (self.root / "private/example.local.json").write_text(
             '{"synthetic":"do not package"}'
         )
-        first = package_source.build(self.root, "0.1.0", "beta", self.root / "first")
-        second = package_source.build(self.root, "0.1.0", "beta", self.root / "second")
+        first = package_source.build(self.root, "0.1.1", "beta", self.root / "first")
+        second = package_source.build(self.root, "0.1.1", "beta", self.root / "second")
         self.assertEqual(first.read_bytes(), second.read_bytes())
         with tarfile.open(first) as package:
             self.assertFalse(any("/private/" in name for name in package.getnames()))
@@ -154,7 +154,7 @@ class SourceDistributionTests(unittest.TestCase):
 
     def test_changed_archive_fails_before_extraction(self):
         self.freeze("rc")
-        archive = package_source.build(self.root, "0.1.0", "rc", self.root / "output")
+        archive = package_source.build(self.root, "0.1.1", "rc", self.root / "output")
         with tarfile.open(archive, "w:gz") as package:
             entry = tarfile.TarInfo("slzb-06-recovery/SOURCE_VERSION")
             entry.size = 6
