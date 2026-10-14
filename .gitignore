@@ -18,3 +18,7 @@ work/
 *.log
 *.tfstate*
 *.tfvars
+
+.fuzz-venv/
+.fuzz-results/
+release-dist/

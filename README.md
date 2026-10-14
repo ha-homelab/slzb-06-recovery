@@ -1,5 +1,7 @@
 # SLZB-06 recovery notes and tools
 
+[![Fuzzing: RC only](https://img.shields.io/badge/Fuzzing-RC%20only-blue)](docs/fuzzing.md)
+
 Practical recovery, backups, firmware upgrades, and troubleshooting for the
 **original SMLIGHT SLZB-06: ESP32 + Texas Instruments CC2652P**. This is an
 independent community project, not SMLIGHT support or firmware distribution.
@@ -250,3 +252,11 @@ is an external Apache-2.0 dependency; it is not vendored here.
 See [contribution and test requirements](CONTRIBUTING.md), the
 [security reporting policy](SECURITY.md), [security design](docs/security-design.md),
 and the [OpenSSF evidence and remaining criteria](docs/openssf-evidence.md).
+
+## Source releases and validation
+
+Versioned beta and RC archives contain the reviewed recovery host tools, synthetic
+tests and documentation. See [RELEASING.md](RELEASING.md) for the shared pipeline
+and [fuzzing](docs/fuzzing.md) for coverage, limits and reproduction. Archives do
+not contain firmware or private backups. Their acceptance checks do not flash
+hardware or replace the device-specific recovery checklist.

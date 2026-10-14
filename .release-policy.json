@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "repository": "ha-homelab/slzb-06-recovery",
+  "visibility": "public",
+  "mode": "release",
+  "default_branch": "main",
+  "version_file": "SOURCE_VERSION",
+  "validation_workflows": [
+    "ci.yml",
+    "codeql.yml",
+    "dependency-review.yml"
+  ],
+  "artifact_pattern": "release-assets*",
+  "local_checks": [
+    "python3 -m unittest discover -s tests -v"
+  ],
+  "single_entry_ci": true,
+  "release_notes": "CHANGELOG.md",
+  "container_assets": {},
+  "notes": [
+    "Release artifacts contain only the reviewed host recovery tools, tests and documentation. They contain no firmware, real backups, Zigbee network keys or operator configuration.",
+    "All acceptance checks use synthetic data and dry-run CLI paths. Hardware identity, firmware acceptance and physical recovery remain separate operator responsibilities."
+  ],
+  "versioning": {
+    "schema": 1,
+    "promotion": "promote-bytes",
+    "toolkit_revision": "8c0743a8db82adb291eee77cbe4d9bfd07218ee3",
+    "files": [
+      {
+        "path": "SOURCE_VERSION",
+        "format": "text",
+        "value": "package"
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "slzb-06-recovery-*.tar.gz",
+        "format": "tar-text",
+        "member": "slzb-06-recovery/SOURCE_VERSION",
+        "value": "package"
+      }
+    ]
+  },
+  "fuzzing": {
+    "toolkit_ref": "8c0743a8db82adb291eee77cbe4d9bfd07218ee3"
+  }
+}
