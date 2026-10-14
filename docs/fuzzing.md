@@ -29,7 +29,7 @@ small deterministic regressions for failures found during development.
 
 The shared runner pins the source revision and toolkit revision, limits each
 input's runtime and process memory, and removes network access during the
-campaign. A successful report records actual engine execution counts and binds
+campaign. Diagnostic logs record actual engine execution counts. A successful report binds
 them to the source commit, workflow attempt and manifest. It is release evidence
 for these host tools, not a certification of hardware or firmware safety and
 not an OSS-Fuzz enrollment badge.
