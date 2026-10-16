@@ -67,3 +67,17 @@ checks. Each release must link that commit and describe changes, upgrade
 implications and security impact, including known limits. GitHub source archives
 allow users to obtain the exact tagged tree; preserve all bundled licenses and
 upstream notices. Report defects against the source tag or full commit ID.
+
+## Review, rights and coding conventions
+
+Follow [governance](GOVERNANCE.md) and the [code of conduct](CODE_OF_CONDUCT.md).
+Submit only work you have the right to license under this repository's MIT
+license; retain third-party notices and identify copied or generated material.
+Python follows PEP 8 and the repository's configured lint rules. Shell scripts
+must quote path and data arguments, check failures and keep execution explicit.
+Update interface documentation and changelog entries when behavior changes.
+Tests for new functionality and regression fixes are required unless the PR
+explains why automation is infeasible and supplies a reproducible alternative.
+Resolve new lint, compiler and analysis warnings before merging, or record a
+specific reviewed false-positive explanation. Do not disable safety checks to
+make CI pass. Keep test assertions enabled.

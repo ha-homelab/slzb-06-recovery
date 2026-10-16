@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add an optional strong TLS host profile across firmware, coordinator and HA
+  HTTPS/WSS clients, with real weak-chain rejection regressions.
+- Document project governance, private reporting and OpenSSF evidence limits.
+
+
 ## [0.1.2] - 2026-10-14
 
 ### Changed

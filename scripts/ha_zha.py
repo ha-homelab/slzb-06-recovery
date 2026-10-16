@@ -10,6 +10,7 @@ from pathlib import Path
 import aiohttp
 
 from slzb import private_write, validate_base_url
+from tls_policy import client_context
 
 
 async def rpc(ws, message, timeout=90):
@@ -30,6 +31,7 @@ async def run(args):
     if not token:
         raise ValueError("An access token is required")
     async with aiohttp.ClientSession(
+        connector=aiohttp.TCPConnector(ssl=client_context()),
         headers={"Authorization": "Bearer " + token},
         timeout=aiohttp.ClientTimeout(total=120), trust_env=False,
     ) as session:

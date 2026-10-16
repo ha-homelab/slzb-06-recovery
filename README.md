@@ -1,5 +1,7 @@
 # SLZB-06 recovery notes and tools
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/15560/badge)](https://www.bestpractices.dev/projects/15560)
+
 [![Fuzzing: RC only](https://img.shields.io/badge/Fuzzing-RC%20only-blue)](docs/fuzzing.md)
 
 Practical recovery, backups, firmware upgrades, and troubleshooting for the
@@ -260,3 +262,9 @@ tests and documentation. See [RELEASING.md](RELEASING.md) for the shared pipelin
 and [fuzzing](docs/fuzzing.md) for coverage, limits and reproduction. Archives do
 not contain firmware or private backups. Their acceptance checks do not flash
 hardware or replace the device-specific recovery checklist.
+
+## Project policies
+
+[Contributing](CONTRIBUTING.md) · [Governance](GOVERNANCE.md) ·
+[Code of conduct](CODE_OF_CONDUCT.md) · [Security](SECURITY.md) ·
+[Roadmap](ROADMAP.md) · [Quality evidence](docs/quality.md)
