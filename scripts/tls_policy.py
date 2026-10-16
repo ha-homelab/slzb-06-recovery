@@ -18,5 +18,7 @@ def client_context():
     context.minimum_version = max(context.minimum_version, ssl.TLSVersion.TLSv1_2)
     level = max(int(value), context.security_level)
     if context.security_level < level:
-        context.set_ciphers(f"DEFAULT:@SECLEVEL={level}")
+        suites = ":".join(cipher["name"] for cipher in context.get_ciphers()
+                          if cipher["protocol"] != "TLSv1.3")
+        context.set_ciphers(f"{suites}:@SECLEVEL={level}")
     return context

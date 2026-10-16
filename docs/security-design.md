@@ -89,3 +89,10 @@ implemented by these helpers.
 
 Report issues through [SECURITY.md](../SECURITY.md). The OpenSSF self-assessment
 records evidence and limitations; it is not a guarantee that a deployment is safe.
+
+## Release-client transport
+
+The shared release client delegates API requests to GitHub CLI. Apply the
+[verified release TLS profile](release-tls-profile.md) when using its commands;
+it preserves normal certificate checks and supports rejecting smaller keys.
+This is independent of application camera or legacy recovery protocols.

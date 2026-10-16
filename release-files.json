@@ -29,6 +29,7 @@
     "docs/quality.md",
     "docs/radio-firmware.md",
     "docs/rc-fuzzing.md",
+    "docs/release-tls-profile.md",
     "docs/security-design.md",
     "docs/sources.md",
     "docs/synology-usb-passthrough.md",
