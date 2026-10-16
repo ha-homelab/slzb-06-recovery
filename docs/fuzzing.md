@@ -1,5 +1,9 @@
 # Release-candidate fuzz testing
 
+See the [illustrated RC fuzzing process and verified rollout results](https://github.com/victron-venus/venus-os-ci-toolkit/blob/main/docs/rc-fuzzing-results.md)
+for the shared release flow, evidence requirements and a dated cross-project
+snapshot. The project-specific scope and reproduction guidance below still apply.
+
 The fuzz targets exercise this repository's host-side recovery guards using
 synthetic data. They do not open USB devices, contact coordinators, download
 firmware, flash chips, connect to Home Assistant, or read private backups.
