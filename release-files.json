@@ -4,10 +4,13 @@
     ".github/fuzz.json",
     ".github/requirements-fuzz.txt",
     "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
+    "GOVERNANCE.md",
     "LICENSE",
     "README.md",
     "RELEASING.md",
+    "ROADMAP.md",
     "SECURITY.md",
     "SOURCE_VERSION",
     "docs/backups.md",
@@ -23,6 +26,7 @@
     "docs/diagrams/zha-device-boundaries.svg",
     "docs/fuzzing.md",
     "docs/openssf-evidence.md",
+    "docs/quality.md",
     "docs/radio-firmware.md",
     "docs/rc-fuzzing.md",
     "docs/security-design.md",
@@ -57,9 +61,11 @@
     "scripts/ha_zha.py",
     "scripts/radio_legacy.py",
     "scripts/slzb.py",
+    "scripts/tls_policy.py",
     "tests/test_esp32_core.py",
     "tests/test_fuzz_guards.py",
     "tests/test_ha_rpc.py",
-    "tests/test_safety.py"
+    "tests/test_safety.py",
+    "tests/test_strict_tls.py"
   ]
 }

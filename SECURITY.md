@@ -3,8 +3,7 @@
 ## Reporting a vulnerability
 
 Use [GitHub private vulnerability reporting](https://github.com/ha-homelab/slzb-06-recovery/security/advisories/new).
-If the form is unavailable, contact a maintainer through the repository's GitHub
-profile to arrange a private channel before sharing sensitive details. Public
+If the form is unavailable, email **alvit.work@gmail.com** privately. Public
 issues are for non-sensitive defects and feature requests.
 
 Include the affected commit/release, prerequisites, a minimal synthetic
@@ -31,3 +30,13 @@ This project provides attended backup, recovery and firmware helpers for the ori
 Coordinator backups contain Zigbee network secrets. Keep them outside Git and protect local copies. The legacy Ethernet path may use plaintext HTTP and serial-over-TCP; use a trusted isolated network. Verify the exact hardware, backup completeness, firmware digest and target before any write. Unit tests and command help never establish that a live device is safe to flash.
 
 See [security design and validation boundaries](docs/security-design.md).
+
+## Response, disclosure and credit
+
+The maintainer aims to acknowledge reports within 14 days, reproduce and assess
+impact, agree on remediation and disclosure with the reporter, and prioritize
+critical issues. Follow up at the same private address if no reply arrives.
+Release notes identify security fixes, affected versions, upgrade actions and
+available CVE/advisory identifiers. Credit the reporter unless they request
+anonymity. These are process commitments, not claims of a guaranteed response
+under all circumstances.

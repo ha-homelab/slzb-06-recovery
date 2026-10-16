@@ -25,92 +25,67 @@ unavailable dependencies, authorization failures and cancellation. A passing
 test run describes its fixtures and environment; it does not certify every
 upstream service, hardware model or production deployment.
 
-## Firmware downloader HTTPS profile
+## Verified HTTPS/WSS host profiles
 
-`scripts/fetch_firmware.py` uses the standard-library HTTPS client, with normal
-certificate and hostname verification. The supported download profile is
-CPython 3.12 or newer with OpenSSL security level 2 or higher and a minimum of
-TLS 1.2. Keep Python and OpenSSL updated. Alternative implementations, older
-interpreters and vendor-modified TLS defaults are outside this verified profile.
+The attended Python tools share `scripts/tls_policy.py`. It uses platform CA
+trust, required certificate and hostname checks, TLS 1.2 or later and OpenSSL
+security level 2 or the stronger platform default. CPython 3.12 or later with a
+maintained OpenSSL is the supported host. No helper disables verification.
+The coordinator blocks redirects and ambient proxies; HA blocks HTTP redirects
+and ambient proxies. Firmware download redirects retain HTTPS certificate checks.
 
-Run this with the same interpreter that will run the downloader. It reports the
-local defaults and exits unsuccessfully when the profile is not met:
-
-```sh
-python3 -c 'import platform, ssl, sys
-context = ssl.create_default_context()
-print(platform.python_implementation(), platform.python_version())
-print(ssl.OPENSSL_VERSION)
-print("security_level=", context.security_level,
-      "minimum_tls=", context.minimum_version.name,
-      "verify_mode=", context.verify_mode.name,
-      "check_hostname=", context.check_hostname)
-supported = (platform.python_implementation() == "CPython"
-             and sys.version_info >= (3, 12)
-             and context.security_level >= 2
-             and context.minimum_version >= ssl.TLSVersion.TLSv1_2
-             and context.verify_mode == ssl.CERT_REQUIRED
-             and context.check_hostname)
-raise SystemExit(0 if supported else 1)'
-```
-
-This checks the local runtime, not the identity of a remote host. Each HTTPS
-connection still verifies its peer. On CPython 3.12.14/OpenSSL 3.5.8, local tests
-of the actual downloader rejected RSA-1024 leaf, intermediate and root keys
-before any HTTP request or file write, under both TLS 1.2 and TLS 1.3. A trusted
-RSA-2048 chain downloaded and verified a synthetic ZIP/HEX pair. The test changed
-only the download URL and expected hashes to local fixtures; it did not replace
-the downloader's transport or lower its TLS policy. A separate client with a
-deliberately lower policy verified that each synthetic chain was otherwise
-usable. No device or real firmware was involved.
-
-The downloader also verifies the independently recorded SHA-256 values for
-both the archive and extracted image. Preserve those checks. This HTTPS profile
-does not add encryption to the legacy device's HTTP or serial-over-TCP recovery
-connections and does not establish the runtime policy of other host tools.
-
-## Home Assistant and coordinator HTTPS/WSS profile
-
-The same CPython 3.12+ / OpenSSL security-level-2 / TLS-1.2-minimum profile
-applies when `scripts/slzb.py` receives an HTTPS coordinator URL and when
-`scripts/ha_zha.py` connects to Home Assistant through HTTPS and WSS. Both retain
-normal certificate and hostname verification. The coordinator helper uses
-standard-library `urllib`; the Home Assistant helper uses the standard verified
-`aiohttp` session. Neither helper lowers the TLS policy to accept a weak peer.
-
-Install `requirements-ha.txt` with `--require-hashes` as shown in the README.
-Run the [runtime check above](#firmware-downloader-https-profile) with
-`.venv-ha/bin/python` in place of `python3`, and inspect the installed dependency:
+For the complete strong-key host profile set:
 
 ```sh
-.venv-ha/bin/python -c 'import aiohttp; print(aiohttp.__version__)'
+export SLZB_TLS_SECURITY_LEVEL=3
 ```
 
-The checked dependency lock currently selects `aiohttp 3.14.4`. Keep both the
-lock and the interpreter updated. The verified runtime was CPython 3.12.14,
-OpenSSL 3.5.8 and aiohttp 3.14.4. Tests called the unchanged coordinator
-status/request and Home Assistant backup code against synthetic local servers:
-RSA-1024 leaf, intermediate and root keys were rejected under TLS 1.2 and 1.3.
-Coordinator and initial Home Assistant HTTPS failures occurred before HTTP or
-authentication. A separate WSS test allowed the initial verified HTTPS response,
-then offered the weak chain on the WebSocket connection; it was rejected before
-WebSocket HTTP, token exchange or backup output. Strong RSA-2048 chains completed
-the simulated status and backup flows; backup output retained mode `0600`.
-A separate lower-policy client verified the test certificates' trust and
-hostname validity. No actual coordinator, Home Assistant service or network
-backup was used.
+The setting reaches the actual firmware `urllib` downloader, coordinator
+`urllib` opener and HA `aiohttp` connector for both HTTPS and WSS. Level 3
+requires at least 128-bit estimated strength (RSA/DH 3072 or EC 256), rejecting
+marginal 2047-bit RSA keys that level 2 can accept after rounding. It may reject
+otherwise valid legacy RSA-2048 peers. Provision compatible HTTPS peers before
+selecting this profile; do not lower certificate verification to work around a
+failure. Only values `2` and `3` are accepted, and neither can lower a stronger
+platform default. OpenSSL implements crypto and secure handshake randomness.
 
-This profile only covers those HTTPS/WSS paths. An explicit HTTP URL remains
-plaintext, including any Home Assistant token sent over it; use an isolated
-trusted network for legacy recovery and HTTPS for Home Assistant whenever
-available. The serial bridge and upstream flashing tools have separate trust
-boundaries. A custom interpreter, TLS override or externally terminated proxy
-requires its own assessment. The host profile does not prove deployed device
-identity, firmware authenticity or safe hardware operations.
+Run the local check with the same environment and interpreter used for recovery:
 
-## Remaining security assessment
+```sh
+PYTHONPATH=scripts .venv/bin/python -c 'from tls_policy import client_context
+c = client_context()
+print(c.security_level, c.minimum_version.name, c.verify_mode.name, c.check_hostname)'
+```
 
-Review legacy plaintext device protocols and documented firmware provenance against the delivery and cryptographic criteria. Record static-analysis and warning disposition; hardware acceptance is separate.
+`tests/test_strict_tls.py` drives all three actual clients against synthetic
+HTTPS peers, using TLS 1.2 and 1.3. RSA-3072 chains succeed. A 2047-bit key in the
+leaf, intermediate or root fails before HTTP requests, HA tokens or firmware
+files are sent/written. Separate tests retain CA/hostname checks and prevent
+lowering stronger platform policy. Certificates, tokens and payloads are invented;
+no live coordinator, HA account or firmware is involved.
 
-Report new issues through [SECURITY.md](../SECURITY.md). An OpenSSF assessment
-records evidence and applicability; it is not a guarantee that a system is safe.
+The firmware downloader additionally verifies recorded SHA-256 digests for both
+the archive and extracted image. These pin the documented upstream bytes, not
+the newest firmware or hardware suitability. Obtain source releases and firmware
+through the documented HTTPS URLs; never trust a hash delivered over plaintext
+as independent authentication.
+
+## Legacy recovery and remaining limits
+
+The original coordinator supports plaintext HTTP and serial-over-TCP recovery.
+These are deliberately attended operations on an isolated trusted network, not
+confidential or authenticated Internet protocols. Use HTTPS for the HA token
+connection. The strong TLS option does not upgrade HTTP, serial bridges, USB
+flashing or other upstream tools. Backup files contain network secrets and use
+exclusive creation with private permissions. Keep them outside Git and restrict
+access to the host and backup storage.
+
+Do not expose recovery endpoints or run against an unverified target. Validate
+hardware identity, exact image hash, flash layout and complete backups before
+explicit writes. Synthetic tests and source-release signatures do not establish
+safe hardware flashing. Upstream flashing tools and firmware have their own
+provenance and security boundaries. No external-user password database is
+implemented by these helpers.
+
+Report issues through [SECURITY.md](../SECURITY.md). The OpenSSF self-assessment
+records evidence and limitations; it is not a guarantee that a deployment is safe.

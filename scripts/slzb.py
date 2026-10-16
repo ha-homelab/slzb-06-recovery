@@ -9,6 +9,8 @@ import re
 import urllib.parse
 import urllib.request
 
+from tls_policy import client_context
+
 
 CONFIG_FILES = tuple(f"{name}.json" for name in (
     "configEther", "configGeneral", "configSecurity", "configSerial", "configWifi", "system"
@@ -42,7 +44,10 @@ def request(base_url, path, *, data=None, content_type=None, timeout=20):
         headers["Content-Type"] = content_type
     req = urllib.request.Request(validate_base_url(base_url) + path, data=data, headers=headers)
     # Do not send local coordinator requests through ambient proxy settings.
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({}), NoRedirect(),
+        urllib.request.HTTPSHandler(context=client_context()),
+    )
     with opener.open(req, timeout=timeout) as response:
         return response.headers, response.read()
 
