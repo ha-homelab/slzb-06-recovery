@@ -1,11 +1,20 @@
 # Changelog
 
-## Unreleased
+## [0.1.3] - 2026-10-17
 
-- Add an optional strong TLS host profile across firmware, coordinator and HA
-  HTTPS/WSS clients, with real weak-chain rejection regressions.
-- Document project governance, private reporting and OpenSSF evidence limits.
+### Changed
 
+- Add an optional strong TLS host profile for firmware, coordinator and Home Assistant HTTPS/WSS clients, with real weak-chain rejection regressions.
+- Refresh shared action revisions and correct security, recovery and release-fuzzing documentation.
+- Document maintenance, private reporting and the limits of the OpenSSF evidence.
+
+### Upgrade
+
+Extract the host-tools archive into a new directory, preserve private backups and local configuration separately, and follow the existing explicit recovery procedure. Retain the previously accepted package for rollback. This release does not automatically modify devices.
+
+### Security
+
+The optional strong transport profile rejects weak certificate chains while retaining verified trust. Release validation uses synthetic inputs and does not establish physical-device recovery or include private backups, network keys or operator configuration.
 
 ## [0.1.2] - 2026-10-14
 
