@@ -95,4 +95,6 @@ records evidence and limitations; it is not a guarantee that a deployment is saf
 The shared release client delegates API requests to GitHub CLI. Apply the
 [verified release TLS profile](release-tls-profile.md) when using its commands;
 it preserves normal certificate checks and supports rejecting smaller keys.
-This is independent of application camera or legacy recovery protocols.
+This release-client profile is separate from the Python firmware, coordinator
+and Home Assistant clients described above. It does not upgrade plaintext
+legacy recovery protocols.
