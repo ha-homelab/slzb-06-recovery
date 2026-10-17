@@ -166,7 +166,7 @@ OTA image. Our [core partition analysis](docs/core-firmware.md) determines what
 can actually be written on the legacy unit.
 
 [SVG files, editable HTML sources, and regeneration instructions](docs/diagrams/README.md)
-use the requested light **diagram-design** style. Source revisions and the
+use a consistent light visual style. Source revisions and the
 boundary between research and hardware evidence are recorded in
 [sources](docs/sources.md#hello-zigbee-world-field-guide).
 
@@ -180,14 +180,14 @@ flashes firmware.
 
 For firmware downloads, use CPython with its standard verified HTTPS defaults
 and OpenSSL security level 2 or higher. Run the
-[TLS runtime check](docs/security-design.md#firmware-downloader-https-profile)
+[TLS runtime check](docs/security-design.md#verified-httpswss-host-profiles)
 with the same interpreter before downloading. Keep that runtime updated; do not
 lower its TLS security settings to accept a weak server certificate.
 
 Use the same verified TLS profile for HTTPS coordinator URLs and Home Assistant
 HTTPS/WSS access. Install the hash-locked Home Assistant dependencies and check
 that virtual environment's interpreter; see the
-[Home Assistant and coordinator profile](docs/security-design.md#home-assistant-and-coordinator-httpswss-profile).
+[Home Assistant and coordinator profile](docs/security-design.md#verified-httpswss-host-profiles).
 Plain HTTP recovery remains limited to an isolated trusted network.
 
 ```sh
