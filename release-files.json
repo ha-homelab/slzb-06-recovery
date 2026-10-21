@@ -66,6 +66,7 @@
     "tests/test_esp32_core.py",
     "tests/test_fuzz_guards.py",
     "tests/test_ha_rpc.py",
+    "tests/test_ha_websocket_redirect.py",
     "tests/test_safety.py",
     "tests/test_strict_tls.py"
   ]

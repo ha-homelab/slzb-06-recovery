@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.5] - Unreleased
+
+### Fixed
+
+- Reject Home Assistant WebSocket redirects before contacting the next address, so neither HTTP authorization nor the WebSocket authentication frame reaches a redirected peer.
+- Require the expected Home Assistant authentication challenge and bound the complete authentication exchange to 30 seconds.
+- Include request transmission in each RPC deadline. A timeout never retries a potentially accepted operation automatically.
+
+### Upgrade
+
+Extract the verified host-tools archive into a new directory and preserve private backups, network keys, local configuration and the previous archive. Configure the direct Home Assistant base URL instead of a redirecting address. After a timeout, inspect Home Assistant state before deciding whether to retry.
+
+### Security
+
+Redirect and timeout regressions use synthetic tokens and loopback servers, including verified HTTPS. These tests do not establish that a deployed credential was exposed or validate physical recovery.
+
 ## [0.1.4] - 2026-10-18
 
 ### Changed

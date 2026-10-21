@@ -39,6 +39,27 @@ class RpcTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(TimeoutError):
             await rpc(SilentSocket([]), {"id": 1, "type": "test"}, timeout=0.01)
 
+    async def test_timeout_includes_sending_without_retry(self):
+        class BlockedSocket(FakeSocket):
+            async def send_json(self, message):
+                self.sent.append(message)
+                await asyncio.Event().wait()
+
+            async def receive_json(self):
+                raise AssertionError("A blocked send must not reach receive")
+
+        socket = BlockedSocket([])
+        task = asyncio.create_task(rpc(socket, {"id": 1, "type": "test"}, timeout=0.01))
+        try:
+            done, _ = await asyncio.wait({task}, timeout=1)
+            self.assertIn(task, done, "RPC deadline did not interrupt the send")
+            with self.assertRaises(TimeoutError):
+                await task
+            self.assertEqual(len(socket.sent), 1)
+        finally:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
 
 if __name__ == "__main__":
     unittest.main()
