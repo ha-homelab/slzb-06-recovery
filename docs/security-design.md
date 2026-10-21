@@ -31,8 +31,17 @@ The attended Python tools share `scripts/tls_policy.py`. It uses platform CA
 trust, required certificate and hostname checks, TLS 1.2 or later and OpenSSL
 security level 2 or the stronger platform default. CPython 3.12 or later with a
 maintained OpenSSL is the supported host. No helper disables verification.
-The coordinator blocks redirects and ambient proxies; HA blocks HTTP redirects
-and ambient proxies. Firmware download redirects retain HTTPS certificate checks.
+The coordinator blocks redirects and ambient proxies; HA blocks HTTP and
+WebSocket redirects and ambient proxies. The WebSocket handshake rejects the
+first redirect before requesting its target, including same-origin redirects
+and HTTPS-to-HTTP downgrades. Configure the direct Home Assistant base URL.
+Firmware download redirects retain HTTPS certificate checks.
+
+The ZHA helper sends its WebSocket authentication frame only after an
+`auth_required` challenge. The complete authentication exchange has a 30-second
+deadline; RPC deadlines cover both sending and receiving. A timed-out command
+may already have been accepted by Home Assistant, so the helper never retries
+it automatically. Inspect integration state before making another attempt.
 
 For the complete strong-key host profile set:
 

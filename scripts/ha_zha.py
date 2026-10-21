@@ -13,9 +13,19 @@ from slzb import private_write, validate_base_url
 from tls_policy import client_context
 
 
+AUTH_TIMEOUT = 30
+
+
+async def reject_redirect(_session, _context, params):
+    # ws_connect follows HTTP redirects; reject before the next request so even
+    # same-origin hops never receive the session's Authorization header.
+    params.response.close()
+    raise RuntimeError("Home Assistant redirect refused; use the direct server URL")
+
+
 async def rpc(ws, message, timeout=90):
-    await ws.send_json(message)
     async with asyncio.timeout(timeout):
+        await ws.send_json(message)
         while True:
             result = await ws.receive_json()
             if result.get("id") == message["id"]:
@@ -30,10 +40,13 @@ async def run(args):
     token = os.environ.get("HA_TOKEN") or getpass.getpass("Home Assistant long-lived access token: ")
     if not token:
         raise ValueError("An access token is required")
+    trace = aiohttp.TraceConfig()
+    trace.on_request_redirect.append(reject_redirect)
     async with aiohttp.ClientSession(
         connector=aiohttp.TCPConnector(ssl=client_context()),
         headers={"Authorization": "Bearer " + token},
         timeout=aiohttp.ClientTimeout(total=120), trust_env=False,
+        trace_configs=[trace],
     ) as session:
         async with session.get(base + "/api/config/config_entries/entry", allow_redirects=False) as response:
             response.raise_for_status()
@@ -57,10 +70,20 @@ async def run(args):
                         print("HA reload request accepted.")
                 return
         async with session.ws_connect(base + "/api/websocket") as ws:
-            await ws.receive_json()
-            await ws.send_json({"type": "auth", "access_token": token})
-            if (await ws.receive_json()).get("type") != "auth_ok":
-                raise RuntimeError("Home Assistant authentication failed")
+            async with asyncio.timeout(AUTH_TIMEOUT):
+                try:
+                    challenge = await ws.receive_json()
+                except (ValueError, TypeError) as exc:
+                    raise RuntimeError("Invalid Home Assistant authentication challenge") from exc
+                if not isinstance(challenge, dict) or challenge.get("type") != "auth_required":
+                    raise RuntimeError("Invalid Home Assistant authentication challenge")
+                await ws.send_json({"type": "auth", "access_token": token})
+                try:
+                    result = await ws.receive_json()
+                except (ValueError, TypeError) as exc:
+                    raise RuntimeError("Home Assistant authentication failed") from exc
+                if not isinstance(result, dict) or result.get("type") != "auth_ok":
+                    raise RuntimeError("Home Assistant authentication failed")
             if args.action in ("disable", "enable"):
                 await rpc(ws, {"id": 1, "type": "config_entries/disable", "entry_id": args.entry_id,
                                "disabled_by": "user" if args.action == "disable" else None}, timeout=300)
