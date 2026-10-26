@@ -4,6 +4,9 @@ updates:
     directory: /
     schedule:
       interval: daily
+    # Update coupled fuzz workflow/runtime/policy pins together via the central toolkit.
+    ignore:
+      - dependency-name: "victron-venus/venus-os-ci-toolkit/.github/workflows/fuzz.yml"
     groups:
       github-actions:
         applies-to: version-updates
