@@ -1,5 +1,7 @@
 # USB core snapshot and guarded 2.5.2 migration
 
+For a routine update with working USB, the [official browser route](browser-core-update.md) avoids installing a local flasher. Use this detailed procedure when you need its full-flash backup, pinned image and identity checks.
+
 This detailed procedure follows the backup and radio checkpoints in the
 [complete upgrade runbook](upgrade-runbook.md).
 

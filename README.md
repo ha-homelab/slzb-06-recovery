@@ -30,6 +30,9 @@ firmware, network, and live-response checkpoints before choosing a procedure.
 
 ## Start here
 
+**Ordinary core update with working USB?** Use the official **[SMLIGHT browser updater](https://smlight.tech/flasher)** and the [short browser guide](docs/browser-core-update.md). The longer recovery runbook below is for preserving and recovering an existing installation, including legacy partition and USB-transfer failures.
+
+
 **[Follow the complete upgrade and recovery runbook](docs/upgrade-runbook.md).**
 It puts the entire route in order: identify → back up → understand the failed
 OTA path → upgrade/validate the radio → prepare USB → snapshot all ESP32 flash
