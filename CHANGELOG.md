@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.6] - Unreleased
+
+### Security
+
+- Update the ESP32 tooling WebSocket dependency to 17.4 to bound fragmented-message reassembly (GHSA-6m5v-9gmr-5665). Preserve esptool 5.4.0 and the other locked dependencies.
+- Verify the locked installation and normal and excessive message fragmentation without contacting devices.
+
+### Upgrade
+
+Use the new host-tools archive and reinstall the hash-locked requirements in the chosen tooling environment. This release does not install firmware, change device state or include private backups and credentials.
+
 ## [0.1.5] - Unreleased
 
 ### Fixed
