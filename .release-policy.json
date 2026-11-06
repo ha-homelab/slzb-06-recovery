@@ -19,7 +19,8 @@
   "container_assets": {},
   "notes": [
     "Release artifacts contain only the reviewed host recovery tools, tests and documentation. They contain no firmware, real backups, Zigbee network keys or operator configuration.",
-    "All acceptance checks use synthetic data and dry-run CLI paths. Hardware identity, firmware acceptance and physical recovery remain separate operator responsibilities."
+    "All acceptance checks use synthetic data and dry-run CLI paths. Hardware identity, firmware acceptance and physical recovery remain separate operator responsibilities.",
+    "The configured release-note file remains a full-validation input so its current release section, upgrade notes and security notes are checked."
   ],
   "versioning": {
     "schema": 1,
@@ -46,5 +47,17 @@
   },
   "fuzzing": {
     "toolkit_ref": "6f0bf114a398f9c2b7e5407042c3828a8cc28b40"
+  },
+  "change_scope": {
+    "documentation_paths": [
+      "GOVERNANCE.md",
+      "ROADMAP.md"
+    ],
+    "required_paths": [
+      "CHANGELOG.md"
+    ],
+    "always_validate_workflows": [
+      "codeql.yml"
+    ]
   }
 }
