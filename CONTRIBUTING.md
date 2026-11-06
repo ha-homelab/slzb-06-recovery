@@ -81,3 +81,24 @@ explains why automation is infeasible and supplies a reproducible alternative.
 Resolve new lint, compiler and analysis warnings before merging, or record a
 specific reviewed false-positive explanation. Do not disable safety checks to
 make CI pass. Keep test assertions enabled.
+
+## Source-build dependency update boundary
+
+The Renovate runner forbids package build-backend execution. The following inputs
+and generated locks must therefore be reviewed and regenerated together in the
+existing controlled build environment; this also applies to security updates.
+GitHub vulnerability alerts remain enabled. Independent build, test and CI
+dependencies retain their configured automatic update paths.
+
+- `requirements-core.in` and `requirements-core.txt`: the USB core tooling requires esptool 5.4.0 without a usable wheel.
+
+Use the existing regeneration command for each pair, then run its current CI
+validation before accepting the source and lock together:
+
+```sh
+uv pip compile requirements-core.in --generate-hashes --universal --python-version=3.12 --output-file=requirements-core.txt
+```
+
+Do not make the shared update runner execute source builds to bypass this
+boundary. Requalify native ownership only when the complete pinned dependency
+closure can be resolved without build-backend execution.

@@ -15,7 +15,9 @@
     "**/node_modules/**",
     "**/fixtures/**",
     "**/tools/browser-compatibility/**",
-    ".github/cosign/**"
+    ".github/cosign/**",
+    "requirements-core.in",
+    "requirements-core.txt"
   ],
   "packageRules": [
     {
@@ -54,9 +56,11 @@
   },
   "pip-compile": {
     "managerFilePatterns": [
-      "/^requirements\\-core\\.txt$/",
       "/^requirements\\-ha\\.txt$/",
       "/^requirements\\-radio\\.txt$/"
     ]
-  }
+  },
+  "description": [
+    "Source-build dependency inputs and their generated locks are maintained together through the documented reviewed environment. Other native and CI updates remain automated."
+  ]
 }
