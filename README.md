@@ -268,6 +268,8 @@ hardware or replace the device-specific recovery checklist.
 
 ## Project policies
 
+Docs index: [docs/README.md](docs/README.md).
+
 [Contributing](CONTRIBUTING.md) · [Governance](GOVERNANCE.md) ·
 [Code of conduct](CODE_OF_CONDUCT.md) · [Security](SECURITY.md) ·
 [Roadmap](ROADMAP.md) · [Quality evidence](docs/quality.md)
