@@ -22,3 +22,4 @@ work/
 .fuzz-venv/
 .fuzz-results/
 release-dist/
+A*S.md
