@@ -1,7 +1,30 @@
 # Changelog
 
-## [0.1.6] - Unreleased
+## [0.1.7] - Unreleased
 
+### Changed
+
+- keep local instruction files out of git.
+- add a navigation index for docs/.
+- preserve merge identity and withdrawn auto-merge requests (#80).
+- verify current default branch before reviewed merges (#77).
+- preserve metadata recovery during event bursts (#76).
+- recover reviewed dependency merges after delayed checks (#75).
+- use the shared CI regeneration guide (#73).
+- stop CI regeneration unless the toolkit checkout is verified (#72).
+- skip heavy validation for documentation-only changes (#71).
+- Document targeted security updates for manual dependency locks (#70).
+
+### Upgrade
+
+Use the new host-tools archive and reinstall the hash-locked requirements in the chosen tooling environment. This release does not install firmware, change device state or include private backups and credentials.
+
+### Security
+
+- Update the ESP32 tooling WebSocket dependency to 17.4 to bound fragmented-message reassembly (GHSA-6m5v-9gmr-5665). Preserve esptool 5.4.0 and the other locked dependencies.
+- Verify the locked installation and normal and excessive message fragmentation without contacting devices.
+
+## [0.1.6] - 2026-11-03
 ### Security
 
 - Update the ESP32 tooling WebSocket dependency to 17.4 to bound fragmented-message reassembly (GHSA-6m5v-9gmr-5665). Preserve esptool 5.4.0 and the other locked dependencies.
